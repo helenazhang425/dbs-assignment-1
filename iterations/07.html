@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 07: Boarding Pass</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy: #1A2744;
+            --navy-light: #2A3A5C;
+            --red: #E63946;
+            --red-light: #F25C69;
+            --sky: #457B9D;
+            --sky-light: #6BA3C0;
+            --off-white: #F1FAEE;
+            --cream: #FDF8F0;
+            --text: #1A2744;
+            --text-light: #6B7B8D;
+            --border: #D8DFE8;
+            --gold: #C49B3C;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background: var(--off-white);
+            line-height: 1.6;
+        }
+
+        .back-link {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-decoration: none;
+            background: #fff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            z-index: 200;
+        }
+        .back-link:hover { color: var(--red); }
+
+        /* ---- Nav ---- */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 2.5rem;
+            background: var(--navy);
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .logo-icon { width: 34px; height: 34px; }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: #fff; }
+        .nav-links a.active { color: var(--red); }
+
+        .nav-ai {
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+            padding: 0.28rem 0.6rem;
+            border: 1.5px solid var(--gold);
+            border-radius: 3px;
+            color: var(--gold) !important;
+            letter-spacing: 0.5px;
+        }
+        .nav-ai:hover { background: var(--gold); color: var(--navy) !important; }
+
+        .nav-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--sky);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        /* ---- Container ---- */
+        .container { max-width: 1020px; margin: 0 auto; padding: 0 2.5rem; }
+
+        /* ---- Hero ---- */
+        .hero {
+            background: var(--navy);
+            color: #fff;
+            padding: 2.5rem 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .hero-inner { max-width: 550px; margin: 0 auto; }
+
+        .hero-kicker {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.6;
+            margin-bottom: 0.4rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 0.92rem;
+            opacity: 0.7;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 0.65rem;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.65rem 1.3rem;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-red { background: var(--red); color: #fff; }
+        .btn-red:hover { background: var(--red-light); }
+        .btn-outline { border: 1.5px solid rgba(255,255,255,0.4); color: #fff; background: none; }
+        .btn-outline:hover { border-color: #fff; }
+
+        /* ---- Search ---- */
+        .search-section { padding: 1.5rem 0; }
+
+        .search-bar {
+            display: flex;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            border: none;
+            font-size: 0.88rem;
+            background: transparent;
+            color: var(--text);
+            outline: none;
+        }
+        .search-bar input::placeholder { color: var(--text-light); }
+
+        .search-btn {
+            padding: 0.65rem 1.2rem;
+            background: var(--red);
+            border: none;
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ---- Upcoming Trip ---- */
+        .upcoming { padding: 0 0 1.5rem; }
+
+        .upcoming-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .upcoming-left { display: flex; align-items: center; gap: 1rem; }
+
+        .countdown { text-align: center; min-width: 60px; }
+
+        .countdown-num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--red);
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+        }
+
+        .upcoming-info h3 { font-size: 1rem; font-weight: 700; }
+        .upcoming-info .meta { font-size: 0.75rem; color: var(--text-light); }
+
+        .upcoming-link {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--red);
+            text-decoration: none;
+        }
+        .upcoming-link:hover { text-decoration: underline; }
+
+        /* ---- Section Headers ---- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-header a {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sky);
+            text-decoration: none;
+        }
+        .section-header a:hover { text-decoration: underline; }
+
+        /* ---- Boarding Pass Itinerary Cards ---- */
+        .itineraries { padding: 0 0 2rem; }
+
+        .pass-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .boarding-pass {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .boarding-pass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        /* Perforated line */
+        .boarding-pass::after {
+            content: '';
+            position: absolute;
+            right: 80px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            border-left: 2px dashed var(--border);
+        }
+
+        .pass-main {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            display: flex;
+            gap: 0.85rem;
+            align-items: center;
+        }
+
+        .pass-emoji {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .pass-details h3 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
+        }
+
+        .pass-route {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--sky);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.15rem;
+        }
+
+        .pass-meta {
+            font-size: 0.72rem;
+            color: var(--text-light);
+        }
+
+        .pass-stub {
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 0.5rem;
+            background: var(--off-white);
+        }
+
+        .pass-stub-date {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 0.2rem;
+        }
+
+        .pass-stub-days {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .pass-stub-label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+        }
+
+        /* Barcode decoration */
+        .pass-barcode {
+            display: flex;
+            gap: 1px;
+            margin-top: 0.5rem;
+        }
+
+        .pass-barcode span {
+            display: block;
+            width: 2px;
+            background: var(--navy);
+            opacity: 0.3;
+        }
+
+        /* ---- Places Traveled ---- */
+        .places { padding: 0 0 2rem; }
+
+        .places-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .places-body {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+        }
+
+        .places-stats {
+            padding: 1.25rem;
+            border-right: 1px solid var(--border);
+        }
+
+        .places-stats-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 0.65rem;
+        }
+
+        .stats-main {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .donut {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: conic-gradient(var(--sky) 0deg 75.6deg, var(--border) 75.6deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .donut-inner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--sky);
+        }
+
+        .country-count { font-size: 2rem; font-weight: 800; line-height: 1; }
+        .country-count-label { font-size: 0.65rem; color: var(--text-light); }
+
+        .stats-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-link {
+            font-size: 0.75rem;
+            color: var(--sky);
+            text-decoration: none;
+        }
+        .stats-link:hover { color: var(--red); }
+
+        .continents-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 0.35rem;
+        }
+
+        .continents-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.15rem;
+            font-size: 0.72rem;
+        }
+
+        .continent-row { color: var(--text-light); }
+        .continent-row strong { color: var(--text); font-weight: 600; }
+        .continent-visited { color: var(--sky); font-weight: 700; }
+
+        .add-places-btn {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            background: var(--sky);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .add-places-btn:hover { background: var(--sky-light); }
+
+        .places-map {
+            padding: 1rem;
+            background: var(--off-white);
+            display: flex;
+            align-items: center;
+        }
+
+        .places-map svg { width: 100%; height: auto; }
+        .places-map svg .water { fill: var(--off-white); }
+        .places-map svg .land { fill: #D0D8E0; stroke: #C0C8D0; stroke-width: 0.5; }
+        .places-map svg .visited { fill: var(--sky); stroke: var(--sky-light); }
+        .places-map svg .visited:hover { fill: var(--red); }
+
+        /* ---- Guides ---- */
+        .guides { padding: 0 0 2rem; }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .guide-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 1.1rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s;
+        }
+        .guide-card:hover { transform: translateY(-2px); }
+
+        .guide-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .guide-card p { font-size: 0.78rem; color: var(--text-light); margin-bottom: 0.4rem; }
+
+        .guide-tags { display: flex; gap: 0.3rem; }
+
+        .guide-tag {
+            font-size: 0.58rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.12rem 0.4rem;
+            border-radius: 3px;
+            background: var(--off-white);
+            color: var(--sky);
+            border: 1px solid var(--border);
+        }
+
+        /* ---- Trending ---- */
+        .trending { padding: 0 0 2rem; }
+
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .trending-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 1rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: transform 0.2s;
+        }
+        .trending-card:hover { transform: translateY(-2px); }
+
+        .trending-emoji { font-size: 1.6rem; }
+
+        .trending-info h4 { font-size: 0.85rem; font-weight: 700; }
+        .trending-info span { font-size: 0.68rem; color: var(--text-light); }
+
+        /* ---- Recently Saved ---- */
+        .saved { padding: 0 0 2rem; }
+
+        .saved-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.85rem;
+        }
+
+        .saved-item {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 0.85rem 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow 0.2s;
+        }
+        .saved-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+        .saved-info h4 { font-size: 0.85rem; font-weight: 700; }
+        .saved-info .meta { font-size: 0.7rem; color: var(--text-light); }
+
+        .saved-type {
+            font-size: 0.58rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.18rem 0.45rem;
+            border-radius: 3px;
+            background: var(--off-white);
+            color: var(--text-light);
+        }
+
+        /* ---- AI ---- */
+        .ai-subtle { padding: 0 0 2rem; }
+
+        .ai-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.25rem;
+            background: #fff;
+            border: 1.5px dashed var(--gold);
+            border-radius: 5px;
+        }
+
+        .ai-inner { display: flex; align-items: center; gap: 0.6rem; }
+
+        .ai-badge {
+            font-size: 0.58rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.22rem 0.4rem;
+            background: var(--gold);
+            color: #fff;
+            border-radius: 3px;
+        }
+
+        .ai-card p { font-size: 0.82rem; color: var(--text-light); }
+        .ai-card p strong { color: var(--text); }
+
+        .ai-link { font-size: 0.75rem; font-weight: 600; color: var(--gold); text-decoration: none; }
+        .ai-link:hover { text-decoration: underline; }
+
+        /* ---- Explore ---- */
+        .explore-section { padding: 0 0 3rem; }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .explore-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 1.25rem;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .explore-card:hover { transform: translateY(-2px); border-color: var(--sky); }
+
+        .explore-icon { font-size: 1.4rem; margin-bottom: 0.35rem; }
+        .explore-card h4 { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.1rem; }
+        .explore-card p { font-size: 0.72rem; color: var(--text-light); }
+
+        /* ---- Footer ---- */
+        footer {
+            background: var(--navy);
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 900px) {
+            .pass-grid { grid-template-columns: 1fr; }
+            .guide-grid, .explore-grid { grid-template-columns: 1fr; }
+            .trending-grid { grid-template-columns: 1fr; }
+            .places-body { grid-template-columns: 1fr; }
+            .places-stats { border-right: none; border-bottom: 1px solid var(--border); }
+            .saved-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 0.85rem 1.5rem; }
+            .container { padding: 0 1.5rem; }
+            .hero { padding: 2rem 1.5rem 1.5rem; }
+            .hero h1 { font-size: 1.7rem; }
+            .hero-actions { flex-direction: column; align-items: center; }
+            .boarding-pass::after { display: none; }
+            .pass-stub { display: none; }
+            .ai-card { flex-direction: column; gap: 0.6rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; All iterations</a>
+
+    <nav>
+        <a href="#" class="logo">
+            <!-- Ticket stub + plane logo -->
+            <svg class="logo-icon" viewBox="0 0 34 34" fill="none">
+                <rect x="3" y="8" width="28" height="18" rx="3" stroke="#fff" stroke-width="1.5" fill="none"/>
+                <!-- Perforated line -->
+                <line x1="24" y1="8" x2="24" y2="26" stroke="#fff" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+                <!-- Plane -->
+                <path d="M10 17 L15 14 L18 17 L15 20Z" fill="#E63946"/>
+                <path d="M15 14 L22 12 L18 17Z" fill="#E63946" opacity="0.7"/>
+                <path d="M15 20 L22 22 L18 17Z" fill="#E63946" opacity="0.7"/>
+            </svg>
+            <span class="logo-text">Tripscape</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">My Trips</a></li>
+            <li><a href="#">Guides</a></li>
+            <li><a href="#">Explore</a></li>
+            <li><a href="#" class="nav-ai">AI Planner</a></li>
+            <li><div class="nav-avatar">HZ</div></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-inner">
+            <p class="hero-kicker">Welcome back, Helena</p>
+            <h1>Ready for your next departure?</h1>
+            <p>Build your itinerary, share your stories, and track every stamp in your passport.</p>
+            <div class="hero-actions">
+                <a href="#" class="btn btn-red">+ New Itinerary</a>
+                <a href="#" class="btn btn-outline">+ Write a Guide</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-bar">
+                <input type="text" placeholder="Search destinations, itineraries, or guides..." disabled>
+                <button class="search-btn" disabled>Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Trip -->
+    <section class="upcoming">
+        <div class="container">
+            <div class="upcoming-card">
+                <div class="upcoming-left">
+                    <div class="countdown">
+                        <span class="countdown-num">12</span>
+                        <span class="countdown-label">days</span>
+                    </div>
+                    <div class="upcoming-info">
+                        <h3>Tokyo &amp; Kyoto</h3>
+                        <span class="meta">Apr 8 – 18, 2025 &middot; 10 days &middot; 14 stops</span>
+                    </div>
+                </div>
+                <a href="#" class="upcoming-link">View itinerary &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Itineraries as boarding passes -->
+    <section class="itineraries">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Itineraries</h2>
+                <a href="#">View all &rarr;</a>
+            </div>
+            <div class="pass-grid">
+                <a href="#" class="boarding-pass">
+                    <div class="pass-main">
+                        <span class="pass-emoji">&#127983;</span>
+                        <div class="pass-details">
+                            <div class="pass-route">Chicago &rarr; Tokyo</div>
+                            <h3>Tokyo &amp; Kyoto</h3>
+                            <span class="pass-meta">14 stops &middot; Temples, food, gardens</span>
+                        </div>
+                    </div>
+                    <div class="pass-stub">
+                        <span class="pass-stub-date">Apr 2025</span>
+                        <span class="pass-stub-days">10</span>
+                        <span class="pass-stub-label">days</span>
+                        <div class="pass-barcode">
+                            <span style="height:12px"></span><span style="height:8px"></span><span style="height:14px"></span><span style="height:6px"></span><span style="height:12px"></span><span style="height:10px"></span><span style="height:14px"></span><span style="height:7px"></span><span style="height:11px"></span><span style="height:9px"></span><span style="height:13px"></span><span style="height:6px"></span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="boarding-pass">
+                    <div class="pass-main">
+                        <span class="pass-emoji">&#9968;</span>
+                        <div class="pass-details">
+                            <div class="pass-route">Santiago &rarr; Punta Arenas</div>
+                            <h3>Patagonia Trek</h3>
+                            <span class="pass-meta">8 stops &middot; W Trek, glaciers</span>
+                        </div>
+                    </div>
+                    <div class="pass-stub">
+                        <span class="pass-stub-date">Jan 2025</span>
+                        <span class="pass-stub-days">14</span>
+                        <span class="pass-stub-label">days</span>
+                        <div class="pass-barcode">
+                            <span style="height:10px"></span><span style="height:14px"></span><span style="height:7px"></span><span style="height:12px"></span><span style="height:8px"></span><span style="height:13px"></span><span style="height:6px"></span><span style="height:11px"></span><span style="height:9px"></span><span style="height:14px"></span><span style="height:7px"></span><span style="height:10px"></span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="boarding-pass">
+                    <div class="pass-main">
+                        <span class="pass-emoji">&#127956;</span>
+                        <div class="pass-details">
+                            <div class="pass-route">Reykjavik &rarr; Ring Road</div>
+                            <h3>Iceland Ring Road</h3>
+                            <span class="pass-meta">22 stops &middot; Waterfalls, hot springs</span>
+                        </div>
+                    </div>
+                    <div class="pass-stub">
+                        <span class="pass-stub-date">Aug 2024</span>
+                        <span class="pass-stub-days">8</span>
+                        <span class="pass-stub-label">days</span>
+                        <div class="pass-barcode">
+                            <span style="height:13px"></span><span style="height:7px"></span><span style="height:11px"></span><span style="height:9px"></span><span style="height:14px"></span><span style="height:6px"></span><span style="height:12px"></span><span style="height:8px"></span><span style="height:10px"></span><span style="height:13px"></span><span style="height:7px"></span><span style="height:11px"></span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="boarding-pass">
+                    <div class="pass-main">
+                        <span class="pass-emoji">&#127939;</span>
+                        <div class="pass-details">
+                            <div class="pass-route">Chicago &rarr; Berlin</div>
+                            <h3>Berlin Marathon</h3>
+                            <span class="pass-meta">9 stops &middot; Race, museums, food</span>
+                        </div>
+                    </div>
+                    <div class="pass-stub">
+                        <span class="pass-stub-date">Sep 2025</span>
+                        <span class="pass-stub-days">5</span>
+                        <span class="pass-stub-label">days</span>
+                        <div class="pass-barcode">
+                            <span style="height:8px"></span><span style="height:12px"></span><span style="height:6px"></span><span style="height:14px"></span><span style="height:9px"></span><span style="height:11px"></span><span style="height:7px"></span><span style="height:13px"></span><span style="height:10px"></span><span style="height:8px"></span><span style="height:14px"></span><span style="height:6px"></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Places Traveled — stats left, map right -->
+    <section class="places">
+        <div class="container">
+            <div class="section-header">
+                <h2>Places Traveled</h2>
+            </div>
+            <div class="places-card">
+                <div class="places-body">
+                    <div class="places-stats">
+                        <div class="places-stats-label">You have been to...</div>
+                        <div class="stats-main">
+                            <div class="donut"><div class="donut-inner">21%</div></div>
+                            <div>
+                                <div class="country-count">41</div>
+                                <div class="country-count-label">Out of 195 UN Countries</div>
+                            </div>
+                        </div>
+                        <div class="stats-links">
+                            <a href="#" class="stats-link">&#9679; My Continents</a>
+                            <a href="#" class="stats-link">&#9679; My Countries</a>
+                            <a href="#" class="stats-link">&#9679; My Cities</a>
+                        </div>
+                        <div class="continents-label">UN Countries</div>
+                        <div class="continents-grid">
+                            <span class="continent-row"><strong>Africa:</strong> <span class="continent-visited">5</span>/54</span>
+                            <span class="continent-row"><strong>N. America:</strong> <span class="continent-visited">3</span>/23</span>
+                            <span class="continent-row"><strong>Asia:</strong> <span class="continent-visited">8</span>/48</span>
+                            <span class="continent-row"><strong>Oceania:</strong> <span class="continent-visited">1</span>/14</span>
+                            <span class="continent-row"><strong>Europe:</strong> <span class="continent-visited">20</span>/46</span>
+                            <span class="continent-row"><strong>S. America:</strong> <span class="continent-visited">4</span>/12</span>
+                            <span class="continent-row"><strong>Antarctica:</strong> <span class="continent-visited">0</span>/2</span>
+                        </div>
+                        <a href="#" class="add-places-btn">+ Add visited places</a>
+                    </div>
+                    <div class="places-map">
+                        <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="water" x="0" y="0" width="1000" height="500"/>
+                            <!-- North America -->
+                            <path class="land visited" d="M100,30 L220,20 L270,50 L280,100 L270,140 L250,170 L200,180 L160,170 L130,140 L110,100 L95,60Z"/>
+                            <!-- Mexico/Central America -->
+                            <path class="land visited" d="M140,170 L190,168 L200,200 L185,225 L160,220 L135,200Z"/>
+                            <!-- Caribbean -->
+                            <path class="land" d="M210,190 L240,185 L245,200 L225,205Z"/>
+                            <!-- South America -->
+                            <path class="land visited" d="M190,235 L250,225 L290,260 L300,320 L285,380 L260,410 L230,400 L210,360 L200,300 L185,260Z"/>
+                            <!-- Greenland -->
+                            <path class="land" d="M280,10 L320,5 L345,30 L335,60 L310,65 L280,45Z"/>
+                            <!-- Iceland -->
+                            <path class="land visited" d="M370,50 L392,44 L400,58 L388,65 L372,60Z"/>
+                            <!-- UK + Ireland -->
+                            <path class="land visited" d="M395,80 L412,74 L418,98 L408,108 L395,100Z"/>
+                            <!-- Scandinavia -->
+                            <path class="land visited" d="M430,28 L450,20 L465,40 L468,75 L458,88 L440,80 L432,55Z"/>
+                            <!-- Western Europe -->
+                            <path class="land visited" d="M400,100 L440,92 L455,115 L450,145 L430,155 L405,150 L395,130Z"/>
+                            <!-- Iberia -->
+                            <path class="land visited" d="M385,148 L415,142 L422,162 L412,175 L388,172Z"/>
+                            <!-- Eastern Europe -->
+                            <path class="land visited" d="M445,80 L490,72 L510,95 L505,130 L480,138 L455,130 L448,105Z"/>
+                            <!-- Italy/Greece/Balkans -->
+                            <path class="land visited" d="M435,130 L465,125 L475,150 L468,172 L450,175 L435,160Z"/>
+                            <!-- Russia -->
+                            <path class="land" d="M490,15 L650,5 L750,20 L780,50 L770,72 L700,62 L600,58 L530,65 L500,50Z"/>
+                            <!-- Turkey -->
+                            <path class="land visited" d="M480,135 L520,128 L540,140 L535,155 L510,160 L485,152Z"/>
+                            <!-- North Africa -->
+                            <path class="land visited" d="M375,178 L460,168 L480,185 L475,210 L440,220 L390,215 L372,198Z"/>
+                            <!-- West Africa -->
+                            <path class="land" d="M370,220 L420,225 L430,260 L415,285 L385,280 L368,255Z"/>
+                            <!-- Central/East Africa -->
+                            <path class="land visited" d="M440,225 L500,218 L515,250 L510,295 L490,310 L460,305 L440,275Z"/>
+                            <!-- Southern Africa -->
+                            <path class="land visited" d="M430,310 L490,305 L510,335 L505,375 L480,390 L450,385 L430,355Z"/>
+                            <!-- Middle East -->
+                            <path class="land visited" d="M510,155 L555,148 L570,172 L565,205 L540,215 L515,210 L505,185Z"/>
+                            <!-- Central Asia -->
+                            <path class="land" d="M560,85 L620,78 L645,100 L638,128 L610,135 L575,128 L560,108Z"/>
+                            <!-- India -->
+                            <path class="land visited" d="M590,155 L630,145 L650,175 L645,215 L625,240 L600,235 L585,205 L580,178Z"/>
+                            <!-- China -->
+                            <path class="land visited" d="M635,65 L720,55 L758,82 L750,120 L720,138 L685,140 L660,128 L645,100Z"/>
+                            <!-- Japan -->
+                            <path class="land visited" d="M770,80 L785,72 L790,100 L782,118 L770,112Z"/>
+                            <!-- Korea -->
+                            <path class="land visited" d="M752,95 L765,90 L768,110 L758,115Z"/>
+                            <!-- Southeast Asia -->
+                            <path class="land visited" d="M660,155 L700,148 L718,175 L712,210 L690,218 L665,212 L655,185Z"/>
+                            <!-- Indonesia -->
+                            <path class="land visited" d="M670,225 L730,218 L760,235 L755,255 L720,260 L680,255 L668,242Z"/>
+                            <!-- Australia -->
+                            <path class="land" d="M720,310 L790,298 L835,320 L840,360 L815,385 L775,390 L740,378 L720,348Z"/>
+                            <!-- New Zealand -->
+                            <path class="land" d="M855,370 L865,365 L870,390 L862,400Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guides -->
+    <section class="guides">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Guides</h2>
+                <a href="#">View all &rarr;</a>
+            </div>
+            <div class="guide-grid">
+                <a href="#" class="guide-card">
+                    <h3>The Perfect 3 Days in Kyoto</h3>
+                    <p>Temples, tea ceremonies, and hidden gardens for first-timers.</p>
+                    <div class="guide-tags"><span class="guide-tag">Japan</span><span class="guide-tag">Culture</span></div>
+                </a>
+                <a href="#" class="guide-card">
+                    <h3>Hiking the W Trek</h3>
+                    <p>Gear, timing, refugios — the honest truth about Patagonia.</p>
+                    <div class="guide-tags"><span class="guide-tag">Chile</span><span class="guide-tag">Hiking</span></div>
+                </a>
+                <a href="#" class="guide-card">
+                    <h3>NYC Marathon as a Tourist</h3>
+                    <p>Balancing race prep with enjoying the city.</p>
+                    <div class="guide-tags"><span class="guide-tag">NYC</span><span class="guide-tag">Running</span></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending -->
+    <section class="trending">
+        <div class="container">
+            <div class="section-header">
+                <h2>Trending This Week</h2>
+                <a href="#">See all &rarr;</a>
+            </div>
+            <div class="trending-grid">
+                <a href="#" class="trending-card">
+                    <span class="trending-emoji">&#127987;</span>
+                    <div class="trending-info"><h4>Lisbon, Portugal</h4><span>342 itineraries</span></div>
+                </a>
+                <a href="#" class="trending-card">
+                    <span class="trending-emoji">&#127884;</span>
+                    <div class="trending-info"><h4>Seoul, South Korea</h4><span>287 itineraries</span></div>
+                </a>
+                <a href="#" class="trending-card">
+                    <span class="trending-emoji">&#127966;</span>
+                    <div class="trending-info"><h4>Lofoten, Norway</h4><span>156 itineraries</span></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recently Saved -->
+    <section class="saved">
+        <div class="container">
+            <div class="section-header">
+                <h2>Recently Saved</h2>
+                <a href="#">View all &rarr;</a>
+            </div>
+            <div class="saved-grid">
+                <a href="#" class="saved-item">
+                    <div class="saved-info"><h4>48 Hours in Lisbon on a Budget</h4><span class="meta">by @maria_adventures &middot; 2.1K saves</span></div>
+                    <span class="saved-type">Guide</span>
+                </a>
+                <a href="#" class="saved-item">
+                    <div class="saved-info"><h4>Seoul Food &amp; Culture: 7 Days</h4><span class="meta">by @seoulmate_travel &middot; 890 saves</span></div>
+                    <span class="saved-type">Itinerary</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI -->
+    <section class="ai-subtle">
+        <div class="container">
+            <div class="ai-card">
+                <div class="ai-inner">
+                    <span class="ai-badge">Pro</span>
+                    <p><strong>AI Trip Planner</strong> — Tell us your destination and dates. Get a full day-by-day itinerary.</p>
+                </div>
+                <a href="#" class="ai-link">Try it free &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explore -->
+    <section class="explore-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Explore</h2>
+                <a href="#">Browse all &rarr;</a>
+            </div>
+            <div class="explore-grid">
+                <a href="#" class="explore-card"><div class="explore-icon">&#128506;</div><h4>Community Itineraries</h4><p>Trip plans from travelers worldwide</p></a>
+                <a href="#" class="explore-card"><div class="explore-icon">&#128218;</div><h4>Travel Guides</h4><p>Insider tips and local knowledge</p></a>
+                <a href="#" class="explore-card"><div class="explore-icon">&#127757;</div><h4>Destinations</h4><p>Browse by country, city, or experience</p></a>
+            </div>
+        </div>
+    </section>
+
+    <footer><p>&copy; 2026 Tripscape</p></footer>
+</body>
+</html>
