@@ -96,13 +96,59 @@ body {
     line-height: 1.7;
 }
 
+/* Iteration grid for chapters with many iterations */
+.iteration-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 800px) {
+    .iteration-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .iteration-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Iterations */
 .iteration {
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 1.5rem 1.75rem;
+    padding: 1.25rem 1.5rem;
     margin-bottom: 1.25rem;
+}
+
+/* Compact iteration style when inside a grid */
+.iteration-grid .iteration {
+    margin-bottom: 0;
+    padding: 1rem 1.15rem;
+}
+
+.iteration-grid .iteration-header {
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.iteration-grid .iteration-number {
+    font-size: 1.4rem;
+}
+
+.iteration-grid .iteration-header h3 {
+    font-size: 0.92rem;
+}
+
+.iteration-grid .iteration-notes {
+    font-size: 0.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .iteration-header {
