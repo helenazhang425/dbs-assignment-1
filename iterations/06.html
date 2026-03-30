@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 06: Polaroid Scrapbook</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --cork: #D4956A;
+            --cork-light: #E8BFA0;
+            --cream: #FFF8F0;
+            --cream-dark: #F5ECE0;
+            --ink: #3A3A3A;
+            --ink-light: #7A7068;
+            --red: #E84855;
+            --blue: #4A90A4;
+            --green: #5A8F6A;
+            --yellow-tape: rgba(255, 230, 140, 0.7);
+            --pink-tape: rgba(255, 180, 180, 0.55);
+            --border: #E0D4C4;
+            --gold: #C49B3C;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: var(--ink);
+            /* Cork board texture */
+            background: var(--cork-light);
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(180, 130, 80, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(200, 150, 100, 0.1) 0%, transparent 40%),
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(160,120,70,0.03) 8px, rgba(160,120,70,0.03) 9px);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .back-link {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            color: var(--ink-light);
+            text-decoration: none;
+            background: var(--cream);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            z-index: 200;
+        }
+
+        .back-link:hover { color: var(--red); }
+
+        /* ---- Nav ---- */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 2.5rem;
+            background: var(--cream);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .logo-icon { width: 32px; height: 32px; }
+
+        .logo-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--ink-light);
+            font-family: -apple-system, sans-serif;
+            font-size: 0.82rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--red); }
+        .nav-links a.active { color: var(--red); font-weight: 600; }
+
+        .nav-ai {
+            font-size: 0.7rem !important;
+            font-weight: 700 !important;
+            padding: 0.3rem 0.65rem;
+            border: 1.5px solid var(--gold);
+            border-radius: 3px;
+            color: var(--gold) !important;
+        }
+
+        .nav-ai:hover { background: var(--gold); color: var(--cream) !important; }
+
+        .nav-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--red);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        /* ---- Container ---- */
+        .container {
+            max-width: 1020px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
+        }
+
+        /* ---- Search + Welcome ---- */
+        .top-section {
+            padding: 2rem 0 1.5rem;
+        }
+
+        .welcome-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.25rem;
+        }
+
+        .welcome-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--ink);
+        }
+
+        .welcome-text p {
+            font-size: 0.9rem;
+            color: var(--ink-light);
+        }
+
+        .welcome-actions {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-red { background: var(--red); color: #fff; }
+        .btn-red:hover { opacity: 0.85; }
+        .btn-outline { border: 1.5px solid var(--ink); color: var(--ink); background: transparent; }
+        .btn-outline:hover { background: var(--ink); color: var(--cream); }
+
+        /* Search bar */
+        .search-bar {
+            display: flex;
+            background: var(--cream);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: none;
+            font-family: Georgia, serif;
+            font-size: 0.9rem;
+            background: transparent;
+            color: var(--ink);
+            outline: none;
+        }
+
+        .search-bar input::placeholder { color: var(--ink-light); }
+
+        .search-btn {
+            padding: 0.7rem 1.2rem;
+            background: var(--red);
+            border: none;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .search-btn:hover { opacity: 0.85; }
+
+        /* ---- Upcoming Trip ---- */
+        .upcoming {
+            padding: 0 0 2rem;
+        }
+
+        .upcoming-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Tape strip decoration */
+        .upcoming-card::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 30px;
+            width: 60px;
+            height: 22px;
+            background: var(--yellow-tape);
+            transform: rotate(-2deg);
+        }
+
+        .upcoming-left {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .countdown {
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .countdown-num {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--red);
+            line-height: 1;
+            font-family: -apple-system, sans-serif;
+        }
+
+        .countdown-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--ink-light);
+            font-family: -apple-system, sans-serif;
+        }
+
+        .upcoming-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .upcoming-info .meta {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.78rem;
+            color: var(--ink-light);
+        }
+
+        .upcoming-link {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--red);
+            text-decoration: none;
+        }
+
+        .upcoming-link:hover { text-decoration: underline; }
+
+        /* ---- Section Headers ---- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        .section-header a {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--red);
+            text-decoration: none;
+        }
+
+        .section-header a:hover { text-decoration: underline; }
+
+        /* ---- Itineraries — Polaroid style ---- */
+        .itineraries { padding: 0 0 2rem; }
+
+        .polaroid-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        .polaroid {
+            background: #fff;
+            padding: 0.6rem 0.6rem 1rem;
+            border-radius: 2px;
+            box-shadow: 2px 3px 12px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .polaroid:nth-child(1) { transform: rotate(-1.5deg); }
+        .polaroid:nth-child(2) { transform: rotate(1deg); }
+        .polaroid:nth-child(3) { transform: rotate(-0.5deg); }
+        .polaroid:nth-child(4) { transform: rotate(1.5deg); }
+
+        .polaroid:hover {
+            transform: rotate(0deg) translateY(-4px);
+            box-shadow: 3px 6px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Tape on polaroids */
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            width: 50px;
+            height: 18px;
+            z-index: 1;
+        }
+
+        .polaroid:nth-child(1)::before { left: 15px; background: var(--yellow-tape); transform: rotate(3deg); }
+        .polaroid:nth-child(2)::before { right: 12px; background: var(--pink-tape); transform: rotate(-2deg); }
+        .polaroid:nth-child(3)::before { left: 20px; background: var(--pink-tape); transform: rotate(1deg); }
+        .polaroid:nth-child(4)::before { right: 18px; background: var(--yellow-tape); transform: rotate(-3deg); }
+
+        .polaroid-photo {
+            height: 110px;
+            border-radius: 1px;
+            margin-bottom: 0.65rem;
+        }
+
+        .photo-tokyo { background: linear-gradient(135deg, #FFB7C5, #FF8FA3 40%, #C4A4CC 70%, #7B6F8E); }
+        .photo-patagonia { background: linear-gradient(135deg, #87CEEB, #4A90A4 35%, #6B8E73 60%, #8B7355); }
+        .photo-iceland { background: linear-gradient(135deg, #6FB1C7, #94D1BE 40%, #3A5F3A 70%, #1A2F1A); }
+        .photo-berlin { background: linear-gradient(135deg, #D4A574, #BF8C5C 40%, #8B6F47 65%, #4A4A4A); }
+
+        .polaroid-caption {
+            padding: 0 0.25rem;
+        }
+
+        .polaroid-caption h3 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
+        }
+
+        .polaroid-caption .meta {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.72rem;
+            color: var(--ink-light);
+        }
+
+        /* ---- Places Traveled — stats LEFT, map RIGHT ---- */
+        .places { padding: 0 0 2rem; }
+
+        .places-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .places-card::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: 50px;
+            width: 65px;
+            height: 20px;
+            background: var(--yellow-tape);
+            transform: rotate(2deg);
+            z-index: 1;
+        }
+
+        .places-body {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+        }
+
+        /* Stats panel */
+        .places-stats {
+            padding: 1.5rem;
+            border-right: 1px solid var(--border);
+        }
+
+        .places-stats-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--red);
+            margin-bottom: 0.75rem;
+            font-family: -apple-system, sans-serif;
+        }
+
+        .places-stats-label {
+            font-size: 0.82rem;
+            color: var(--ink-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .stats-main {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .donut {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(var(--red) 0deg 75.6deg, var(--border) 75.6deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .donut-inner {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--red);
+        }
+
+        .country-count {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+            font-family: -apple-system, sans-serif;
+        }
+
+        .country-count-label {
+            font-size: 0.68rem;
+            color: var(--ink-light);
+            font-family: -apple-system, sans-serif;
+        }
+
+        .stats-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-link {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.78rem;
+            color: var(--blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .stats-link:hover { color: var(--red); }
+
+        .stats-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--blue);
+            display: inline-block;
+        }
+
+        .continents-label {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--ink-light);
+            margin-bottom: 0.4rem;
+        }
+
+        .continents-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.2rem;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.75rem;
+        }
+
+        .continent-row { color: var(--ink-light); }
+        .continent-row strong { color: var(--ink); font-weight: 600; }
+        .continent-visited { color: var(--red); font-weight: 700; }
+
+        .add-places-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-top: 0.85rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 4px;
+            background: var(--red);
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .add-places-btn:hover { opacity: 0.85; }
+
+        /* Map panel */
+        .places-map {
+            padding: 1rem;
+            background: var(--cream-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .places-map svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .places-map svg .water { fill: var(--cream-dark); }
+        .places-map svg .land { fill: #D0C7B8; stroke: #C0B5A4; stroke-width: 0.4; }
+        .places-map svg .visited { fill: var(--red); stroke: #D06060; }
+        .places-map svg .visited:hover { fill: var(--blue); }
+
+        /* ---- Guides ---- */
+        .guides { padding: 0 0 2rem; }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .guide-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1.15rem;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 2px 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .guide-card h3 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .guide-card p {
+            font-size: 0.8rem;
+            color: var(--ink-light);
+            margin-bottom: 0.45rem;
+        }
+
+        .guide-tags { display: flex; gap: 0.3rem; }
+
+        .guide-tag {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.12rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+            color: var(--ink-light);
+        }
+
+        /* ---- Trending Destinations ---- */
+        .trending { padding: 0 0 2rem; }
+
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.85rem;
+        }
+
+        .trending-card {
+            background: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 1px 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .trending-card:hover { transform: translateY(-2px); }
+
+        .trending-photo {
+            height: 70px;
+        }
+
+        .trend-lisbon { background: linear-gradient(135deg, #F2C94C, #E8A838 50%, #D4825A); }
+        .trend-seoul { background: linear-gradient(135deg, #C8A2C8, #9B72AA 50%, #6B4C8A); }
+        .trend-oaxaca { background: linear-gradient(135deg, #E8612D, #D4A03C 50%, #8B6F47); }
+        .trend-norway { background: linear-gradient(135deg, #4A90A4, #3A7A8A 50%, #2A5A6A); }
+        .trend-japan { background: linear-gradient(135deg, #FFB7C5, #E8A0B0 50%, #C08090); }
+
+        .trending-body {
+            padding: 0.55rem 0.65rem;
+        }
+
+        .trending-body h4 {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .trending-body span {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.62rem;
+            color: var(--ink-light);
+        }
+
+        /* ---- Recently Saved ---- */
+        .saved { padding: 0 0 2rem; }
+
+        .saved-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .saved-item {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow 0.2s;
+        }
+
+        .saved-item:hover {
+            box-shadow: 2px 3px 10px rgba(0,0,0,0.06);
+        }
+
+        .saved-info h4 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
+        }
+
+        .saved-info .meta {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.72rem;
+            color: var(--ink-light);
+        }
+
+        .saved-type {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            background: var(--cream-dark);
+            color: var(--ink-light);
+            white-space: nowrap;
+        }
+
+        /* ---- AI Discreet ---- */
+        .ai-subtle { padding: 0 0 2rem; }
+
+        .ai-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.25rem;
+            background: var(--cream);
+            border: 1.5px dashed var(--gold);
+            border-radius: 4px;
+        }
+
+        .ai-inner {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .ai-badge {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.25rem 0.45rem;
+            background: var(--gold);
+            color: #fff;
+            border-radius: 3px;
+        }
+
+        .ai-card p {
+            font-size: 0.85rem;
+            color: var(--ink-light);
+        }
+
+        .ai-card p strong { color: var(--ink); }
+
+        .ai-link {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .ai-link:hover { text-decoration: underline; }
+
+        /* ---- Explore ---- */
+        .explore-section { padding: 0 0 3rem; }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .explore-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1.25rem;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .explore-card:hover { transform: translateY(-2px); border-color: var(--red); }
+
+        .explore-icon { font-size: 1.4rem; margin-bottom: 0.35rem; }
+
+        .explore-card h4 {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+        }
+
+        .explore-card p {
+            font-size: 0.75rem;
+            color: var(--ink-light);
+        }
+
+        /* ---- Footer ---- */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.75rem;
+            color: var(--ink-light);
+            background: var(--cream);
+            border-top: 2px solid var(--border);
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 900px) {
+            .polaroid-grid { grid-template-columns: repeat(2, 1fr); }
+            .polaroid { transform: rotate(0deg) !important; }
+            .guide-grid, .explore-grid { grid-template-columns: 1fr; }
+            .trending-grid { grid-template-columns: repeat(3, 1fr); }
+            .places-body { grid-template-columns: 1fr; }
+            .places-stats { border-right: none; border-bottom: 1px solid var(--border); }
+            .saved-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 0.85rem 1.5rem; }
+            .nav-links { gap: 0.75rem; }
+            .container { padding: 0 1.5rem; }
+            .polaroid-grid { grid-template-columns: 1fr; }
+            .trending-grid { grid-template-columns: repeat(2, 1fr); }
+            .welcome-row { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .ai-card { flex-direction: column; gap: 0.65rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; All iterations</a>
+
+    <!-- Nav -->
+    <nav>
+        <a href="#" class="logo">
+            <!-- Camera shutter logo -->
+            <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="14.5" stroke="#3A3A3A" stroke-width="1.5"/>
+                <circle cx="16" cy="16" r="8" stroke="#E84855" stroke-width="1.2" fill="none"/>
+                <circle cx="16" cy="16" r="3.5" fill="#E84855"/>
+                <!-- Shutter blades -->
+                <path d="M16 2 L18 8 L14 8Z" fill="#3A3A3A" opacity="0.4"/>
+                <path d="M28 10 L22 12 L22 8Z" fill="#3A3A3A" opacity="0.4"/>
+                <path d="M28 22 L22 20 L24 16Z" fill="#3A3A3A" opacity="0.4"/>
+                <path d="M16 30 L14 24 L18 24Z" fill="#3A3A3A" opacity="0.4"/>
+                <path d="M4 22 L10 20 L10 24Z" fill="#3A3A3A" opacity="0.4"/>
+                <path d="M4 10 L10 12 L8 16Z" fill="#3A3A3A" opacity="0.4"/>
+            </svg>
+            <span class="logo-text">Tripscape</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">My Trips</a></li>
+            <li><a href="#">Guides</a></li>
+            <li><a href="#">Explore</a></li>
+            <li><a href="#" class="nav-ai">AI Planner</a></li>
+            <li><div class="nav-avatar">HZ</div></li>
+        </ul>
+    </nav>
+
+    <!-- Search + Welcome -->
+    <section class="top-section">
+        <div class="container">
+            <div class="welcome-row">
+                <div class="welcome-text">
+                    <h1>Welcome back, Helena</h1>
+                    <p>Where will your next page take you?</p>
+                </div>
+                <div class="welcome-actions">
+                    <a href="#" class="btn btn-red">+ New Itinerary</a>
+                    <a href="#" class="btn btn-outline">+ New Guide</a>
+                </div>
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search destinations, itineraries, or guides..." disabled>
+                <button class="search-btn" disabled>Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Trip -->
+    <section class="upcoming">
+        <div class="container">
+            <div class="upcoming-card">
+                <div class="upcoming-left">
+                    <div class="countdown">
+                        <span class="countdown-num">12</span>
+                        <span class="countdown-label">days</span>
+                    </div>
+                    <div class="upcoming-info">
+                        <h3>Tokyo &amp; Kyoto</h3>
+                        <span class="meta">Apr 8 – 18, 2025 &middot; 10 days &middot; 14 stops</span>
+                    </div>
+                </div>
+                <a href="#" class="upcoming-link">View itinerary &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Itineraries -->
+    <section class="itineraries">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Itineraries</h2>
+                <a href="#">View all &rarr;</a>
+            </div>
+            <div class="polaroid-grid">
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-tokyo"></div>
+                    <div class="polaroid-caption">
+                        <h3>Tokyo &amp; Kyoto</h3>
+                        <span class="meta">10 days &middot; 14 stops &middot; Apr 2025</span>
+                    </div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-patagonia"></div>
+                    <div class="polaroid-caption">
+                        <h3>Patagonia Trek</h3>
+                        <span class="meta">14 days &middot; 8 stops &middot; Jan 2025</span>
+                    </div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-iceland"></div>
+                    <div class="polaroid-caption">
+                        <h3>Iceland Ring Road</h3>
+                        <span class="meta">8 days &middot; 22 stops &middot; Aug 2024</span>
+                    </div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-berlin"></div>
+                    <div class="polaroid-caption">
+                        <h3>Berlin Marathon</h3>
+                        <span class="meta">5 days &middot; 9 stops &middot; Sep 2025</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Places Traveled — stats left, map right -->
+    <section class="places">
+        <div class="container">
+            <div class="section-header">
+                <h2>Places Traveled</h2>
+            </div>
+            <div class="places-card">
+                <div class="places-body">
+                    <div class="places-stats">
+                        <div class="places-stats-label">You have been to...</div>
+                        <div class="stats-main">
+                            <div class="donut">
+                                <div class="donut-inner">21%</div>
+                            </div>
+                            <div>
+                                <div class="country-count">41</div>
+                                <div class="country-count-label">Out of 195 UN Countries</div>
+                            </div>
+                        </div>
+                        <div class="stats-links">
+                            <a href="#" class="stats-link"><span class="stats-dot"></span> My Continents</a>
+                            <a href="#" class="stats-link"><span class="stats-dot"></span> My Countries</a>
+                            <a href="#" class="stats-link"><span class="stats-dot"></span> My Cities</a>
+                        </div>
+                        <div class="continents-label">UN Countries</div>
+                        <div class="continents-grid">
+                            <span class="continent-row"><strong>Africa:</strong> <span class="continent-visited">5</span>/54</span>
+                            <span class="continent-row"><strong>N. America:</strong> <span class="continent-visited">3</span>/23</span>
+                            <span class="continent-row"><strong>Asia:</strong> <span class="continent-visited">8</span>/48</span>
+                            <span class="continent-row"><strong>Oceania:</strong> <span class="continent-visited">1</span>/14</span>
+                            <span class="continent-row"><strong>Europe:</strong> <span class="continent-visited">20</span>/46</span>
+                            <span class="continent-row"><strong>S. America:</strong> <span class="continent-visited">4</span>/12</span>
+                            <span class="continent-row"><strong>Antarctica:</strong> <span class="continent-visited">0</span>/2</span>
+                        </div>
+                        <a href="#" class="add-places-btn">+ Add visited places</a>
+                    </div>
+                    <div class="places-map">
+                        <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="water" x="0" y="0" width="1200" height="600"/>
+                            <!-- Reusing the detailed map from iteration 04/05 -->
+                            <path class="land visited" d="M80,70 L110,55 L140,58 L155,72 L145,88 L120,95 L95,92 L78,82Z"/>
+                            <path class="land visited" d="M140,52 L200,38 L260,35 L310,42 L330,58 L318,78 L295,88 L260,92 L220,85 L180,78 L150,72Z"/>
+                            <path class="land" d="M190,18 L240,12 L290,18 L310,32 L280,38 L240,35 L200,30Z"/>
+                            <path class="land" d="M340,15 L380,8 L410,22 L415,55 L400,72 L370,75 L348,60 L338,38Z"/>
+                            <path class="land visited" d="M150,92 L210,85 L260,90 L300,98 L315,112 L310,138 L295,155 L270,168 L245,175 L220,172 L195,162 L170,148 L155,128 L148,108Z"/>
+                            <path class="land visited" d="M155,162 L195,160 L215,172 L225,195 L215,215 L198,225 L178,222 L162,210 L148,195 L145,178Z"/>
+                            <path class="land" d="M198,225 L218,218 L232,235 L225,258 L212,268 L198,262 L188,245Z"/>
+                            <path class="land" d="M228,198 L262,192 L275,202 L265,212 L238,215 L225,208Z"/>
+                            <path class="land" d="M275,208 L290,205 L295,218 L285,225 L272,220Z"/>
+                            <path class="land" d="M215,268 L245,262 L268,275 L272,298 L255,308 L235,305 L218,292Z"/>
+                            <path class="land" d="M248,258 L280,252 L298,265 L295,282 L272,290 L255,285 L248,272Z"/>
+                            <path class="land" d="M298,260 L318,255 L325,272 L315,282 L300,278Z"/>
+                            <path class="land" d="M208,298 L228,295 L235,312 L222,322 L208,318Z"/>
+                            <path class="land visited" d="M212,318 L238,312 L248,335 L245,362 L228,375 L210,368 L202,345Z"/>
+                            <path class="land" d="M268,288 L318,278 L345,298 L355,332 L350,368 L330,398 L305,415 L275,408 L255,388 L248,358 L252,322 L260,302Z"/>
+                            <path class="land" d="M260,358 L285,352 L295,375 L282,392 L262,388 L255,372Z"/>
+                            <path class="land" d="M295,378 L315,372 L322,392 L310,402 L295,398Z"/>
+                            <path class="land visited" d="M240,382 L255,378 L260,408 L258,438 L252,468 L245,488 L238,495 L232,478 L235,448 L235,415Z"/>
+                            <path class="land visited" d="M258,392 L290,385 L308,405 L312,432 L302,462 L285,482 L265,488 L252,472 L255,440 L258,415Z"/>
+                            <path class="land" d="M310,408 L322,402 L328,418 L320,428 L308,425Z"/>
+                            <path class="land visited" d="M442,58 L468,50 L488,58 L485,72 L465,78 L445,72Z"/>
+                            <path class="land visited" d="M460,102 L472,98 L478,112 L470,122 L458,118Z"/>
+                            <path class="land visited" d="M475,92 L490,85 L498,100 L495,118 L488,128 L478,125 L475,108Z"/>
+                            <path class="land visited" d="M510,38 L522,30 L535,35 L540,58 L545,78 L538,95 L528,88 L518,68 L512,52Z"/>
+                            <path class="land visited" d="M528,42 L542,38 L548,55 L552,78 L548,95 L538,98 L530,82 L525,60Z"/>
+                            <path class="land" d="M548,32 L565,28 L575,48 L572,72 L565,88 L555,82 L550,58Z"/>
+                            <path class="land visited" d="M510,92 L522,88 L525,100 L518,108 L508,105Z"/>
+                            <path class="land visited" d="M498,108 L510,105 L515,115 L508,122 L498,118Z"/>
+                            <path class="land visited" d="M480,125 L505,118 L518,128 L515,148 L502,158 L485,155 L475,142Z"/>
+                            <path class="land visited" d="M465,155 L498,150 L510,162 L505,180 L488,188 L468,185 L458,172Z"/>
+                            <path class="land visited" d="M452,162 L462,158 L465,178 L460,188 L450,185 L448,172Z"/>
+                            <path class="land visited" d="M510,98 L535,92 L545,108 L540,125 L525,132 L512,128 L505,112Z"/>
+                            <path class="land visited" d="M538,88 L565,82 L578,98 L572,118 L558,122 L542,115 L538,102Z"/>
+                            <path class="land visited" d="M530,118 L548,115 L555,125 L548,132 L532,130Z"/>
+                            <path class="land visited" d="M522,130 L542,128 L550,135 L545,142 L528,142 L520,138Z"/>
+                            <path class="land visited" d="M500,135 L518,132 L522,142 L512,148 L500,145Z"/>
+                            <path class="land visited" d="M510,148 L528,142 L538,155 L542,172 L535,188 L525,185 L518,170 L512,158Z"/>
+                            <path class="land visited" d="M525,190 L538,188 L540,198 L530,200Z"/>
+                            <path class="land" d="M508,172 L515,170 L518,182 L512,185Z"/>
+                            <path class="land visited" d="M548,128 L568,125 L575,135 L568,145 L550,142Z"/>
+                            <path class="land" d="M568,120 L592,115 L600,128 L595,142 L578,145 L570,135Z"/>
+                            <path class="land" d="M578,145 L598,142 L605,155 L598,165 L580,162Z"/>
+                            <path class="land visited" d="M568,158 L585,155 L592,168 L588,182 L578,185 L568,178 L565,168Z"/>
+                            <path class="land visited" d="M535,138 L552,135 L558,148 L548,155 L535,150Z"/>
+                            <path class="land" d="M555,142 L572,138 L580,152 L572,162 L558,158 L552,150Z"/>
+                            <path class="land" d="M558,72 L575,68 L582,82 L578,95 L565,92 L558,82Z"/>
+                            <path class="land" d="M575,82 L598,78 L608,92 L602,108 L585,112 L575,100Z"/>
+                            <path class="land" d="M585,108 L620,100 L640,112 L638,132 L618,142 L598,138 L588,125Z"/>
+                            <path class="land" d="M590,22 L680,12 L780,18 L860,28 L940,35 L980,52 L985,78 L960,88 L920,82 L860,72 L800,68 L740,65 L680,62 L640,68 L610,72 L585,65 L578,42Z"/>
+                            <path class="land" d="M940,32 L1000,22 L1040,32 L1060,55 L1050,78 L1020,85 L990,78 L970,62Z"/>
+                            <path class="land visited" d="M455,195 L480,190 L490,205 L482,220 L462,222 L450,212Z"/>
+                            <path class="land" d="M480,192 L520,185 L538,200 L532,225 L510,235 L488,232 L480,215Z"/>
+                            <path class="land" d="M520,182 L532,178 L538,195 L530,205 L520,200Z"/>
+                            <path class="land" d="M535,195 L572,188 L585,208 L580,238 L560,248 L538,245 L530,225Z"/>
+                            <path class="land visited" d="M578,192 L608,185 L618,205 L615,232 L598,242 L580,238 L575,215Z"/>
+                            <path class="land" d="M445,232 L490,228 L500,255 L490,278 L460,282 L440,268 L438,248Z"/>
+                            <path class="land" d="M498,248 L545,242 L558,262 L552,288 L530,298 L505,295 L495,275Z"/>
+                            <path class="land" d="M490,285 L515,280 L525,302 L515,318 L495,322 L485,308Z"/>
+                            <path class="land" d="M438,272 L465,268 L478,290 L470,312 L452,318 L438,305Z"/>
+                            <path class="land" d="M518,310 L540,305 L548,328 L540,348 L522,352 L515,335Z"/>
+                            <path class="land" d="M540,328 L568,322 L578,348 L572,372 L552,378 L538,368 L535,348Z"/>
+                            <path class="land" d="M588,238 L620,232 L632,255 L628,282 L610,292 L590,288 L582,265Z"/>
+                            <path class="land" d="M618,278 L645,272 L658,292 L648,312 L628,315 L615,302Z"/>
+                            <path class="land" d="M650,282 L672,275 L678,298 L668,318 L652,315 L648,298Z"/>
+                            <path class="land visited" d="M628,312 L650,308 L658,328 L648,348 L632,348 L622,335Z"/>
+                            <path class="land visited" d="M620,345 L648,340 L658,365 L648,388 L628,392 L618,375Z"/>
+                            <path class="land" d="M568,348 L598,342 L612,365 L608,392 L588,402 L568,398 L560,375Z"/>
+                            <path class="land" d="M528,382 L558,378 L565,405 L558,428 L538,432 L525,418 L522,398Z"/>
+                            <path class="land" d="M572,395 L598,390 L608,412 L600,432 L580,435 L568,420Z"/>
+                            <path class="land" d="M612,398 L632,392 L638,418 L632,445 L618,448 L608,435Z"/>
+                            <path class="land" d="M590,430 L612,425 L618,445 L610,458 L592,458 L585,445Z"/>
+                            <path class="land visited" d="M555,455 L598,448 L618,458 L628,478 L618,500 L595,510 L568,505 L548,492 L545,472Z"/>
+                            <path class="land" d="M535,435 L565,430 L578,448 L572,468 L555,475 L538,468 L530,452Z"/>
+                            <path class="land" d="M652,412 L665,405 L672,435 L665,462 L655,465 L648,440Z"/>
+                            <path class="land visited" d="M590,148 L632,140 L658,150 L655,168 L635,178 L608,175 L592,168Z"/>
+                            <path class="land" d="M632,168 L665,162 L678,180 L672,202 L652,208 L635,205 L628,188Z"/>
+                            <path class="land" d="M628,208 L668,198 L688,218 L685,252 L665,268 L640,265 L625,248 L622,225Z"/>
+                            <path class="land" d="M668,155 L708,148 L725,168 L722,198 L702,208 L678,205 L668,185Z"/>
+                            <path class="land" d="M658,262 L690,255 L705,268 L698,285 L678,288 L660,278Z"/>
+                            <path class="land visited" d="M688,235 L705,232 L712,248 L705,258 L690,255Z"/>
+                            <path class="land visited" d="M598,180 L615,175 L622,195 L618,215 L605,218 L598,205Z"/>
+                            <path class="land" d="M680,100 L730,92 L758,108 L752,132 L728,142 L698,138 L680,125Z"/>
+                            <path class="land" d="M720,170 L745,162 L758,182 L752,208 L738,215 L722,210 L715,192Z"/>
+                            <path class="land visited" d="M728,208 L762,198 L780,218 L785,252 L775,282 L755,298 L738,290 L725,268 L720,240Z"/>
+                            <path class="land" d="M762,302 L772,298 L775,315 L768,322 L760,318Z"/>
+                            <path class="land" d="M755,195 L778,190 L785,202 L775,210 L758,208Z"/>
+                            <path class="land visited" d="M765,92 L830,78 L880,92 L905,118 L898,152 L875,172 L845,178 L815,175 L790,165 L775,148 L765,125Z"/>
+                            <path class="land" d="M790,65 L850,55 L895,68 L900,85 L878,92 L835,88 L798,82Z"/>
+                            <path class="land" d="M905,112 L918,108 L925,122 L918,132 L908,128Z"/>
+                            <path class="land visited" d="M912,130 L925,125 L930,142 L922,152 L912,148Z"/>
+                            <path class="land visited" d="M935,102 L948,95 L955,112 L952,135 L945,152 L938,158 L932,142 L930,118Z"/>
+                            <path class="land visited" d="M940,85 L952,80 L958,92 L950,100 L940,98Z"/>
+                            <path class="land" d="M895,175 L905,170 L908,185 L900,192Z"/>
+                            <path class="land" d="M798,185 L815,180 L822,202 L818,225 L808,235 L798,228 L792,208Z"/>
+                            <path class="land visited" d="M815,215 L832,210 L840,232 L835,258 L825,268 L815,262 L810,240Z"/>
+                            <path class="land visited" d="M838,205 L852,200 L860,222 L858,252 L848,268 L838,262 L832,238Z"/>
+                            <path class="land" d="M830,238 L845,235 L850,255 L842,265 L830,262Z"/>
+                            <path class="land" d="M822,272 L832,268 L838,288 L832,302 L822,298Z"/>
+                            <path class="land" d="M895,198 L910,192 L918,215 L912,238 L900,242 L892,225Z"/>
+                            <path class="land" d="M855,278 L878,272 L888,292 L880,308 L862,312 L852,298Z"/>
+                            <path class="land" d="M812,302 L830,295 L838,318 L828,338 L815,335 L808,318Z"/>
+                            <path class="land visited" d="M838,338 L872,332 L885,342 L878,352 L848,355 L835,348Z"/>
+                            <path class="land" d="M882,305 L895,300 L902,318 L895,332 L882,328Z"/>
+                            <path class="land" d="M920,298 L955,290 L972,308 L965,328 L942,335 L925,325 L918,312Z"/>
+                            <path class="land" d="M888,378 L945,362 L990,378 L1008,408 L1000,445 L975,465 L940,472 L908,462 L885,438 L878,408Z"/>
+                            <path class="land" d="M960,475 L972,470 L978,485 L970,492 L960,488Z"/>
+                            <path class="land" d="M1025,445 L1035,438 L1042,458 L1035,472 L1025,468Z"/>
+                            <path class="land" d="M1018,472 L1032,468 L1038,488 L1030,502 L1018,498Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Guides -->
+    <section class="guides">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Guides</h2>
+                <a href="#">View all &rarr;</a>
+            </div>
+            <div class="guide-grid">
+                <a href="#" class="guide-card">
+                    <h3>The Perfect 3 Days in Kyoto</h3>
+                    <p>Temples, tea ceremonies, and hidden gardens for first-timers.</p>
+                    <div class="guide-tags">
+                        <span class="guide-tag">Japan</span>
+                        <span class="guide-tag">Culture</span>
+                    </div>
+                </a>
+                <a href="#" class="guide-card">
+                    <h3>Hiking the W Trek</h3>
+                    <p>Gear, timing, refugios — the honest truth about Patagonia.</p>
+                    <div class="guide-tags">
+                        <span class="guide-tag">Chile</span>
+                        <span class="guide-tag">Hiking</span>
+                    </div>
+                </a>
+                <a href="#" class="guide-card">
+                    <h3>NYC Marathon as a Tourist</h3>
+                    <p>Balancing race prep with enjoying the city.</p>
+                    <div class="guide-tags">
+                        <span class="guide-tag">NYC</span>
+                        <span class="guide-tag">Running</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Destinations -->
+    <section class="trending">
+        <div class="container">
+            <div class="section-header">
+                <h2>Trending This Week</h2>
+                <a href="#">See all &rarr;</a>
+            </div>
+            <div class="trending-grid">
+                <a href="#" class="trending-card">
+                    <div class="trending-photo trend-lisbon"></div>
+                    <div class="trending-body">
+                        <h4>Lisbon, Portugal</h4>
+                        <span>342 itineraries</span>
+                    </div>
+                </a>
+                <a href="#" class="trending-card">
+                    <div class="trending-photo trend-seoul"></div>
+                    <div class="trending-body">
+                        <h4>Seoul, South Korea</h4>
+                        <span>287 itineraries</span>
+                    </div>
+                </a>
+                <a href="#" class="trending-card">
+                    <div class="trending-photo trend-oaxaca"></div>
+                    <div class="trending-body">
+                        <h4>Oaxaca, Mexico</h4>
+                        <span>198 itineraries</span>
+                    </div>
+                </a>
+                <a href="#" class="trending-card">
+                    <div class="trending-photo trend-norway"></div>
+                    <div class="trending-body">
+                        <h4>Lofoten, Norway</h4>
+                        <span>156 itineraries</span>
+                    </div>
+                </a>
+                <a href="#" class="trending-card">
+                    <div class="trending-photo trend-japan"></div>
+                    <div class="trending-body">
+                        <h4>Osaka, Japan</h4>
+                        <span>312 itineraries</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recently Saved -->
+    <section class="saved">
+        <div class="container">
+            <div class="section-header">
+                <h2>Recently Saved</h2>
+                <a href="#">View all &rarr;</a>
+            </div>
+            <div class="saved-grid">
+                <a href="#" class="saved-item">
+                    <div class="saved-info">
+                        <h4>48 Hours in Lisbon on a Budget</h4>
+                        <span class="meta">by @maria_adventures &middot; 2.1K saves</span>
+                    </div>
+                    <span class="saved-type">Guide</span>
+                </a>
+                <a href="#" class="saved-item">
+                    <div class="saved-info">
+                        <h4>Seoul Food &amp; Culture: 7 Days</h4>
+                        <span class="meta">by @seoulmate_travel &middot; 890 saves</span>
+                    </div>
+                    <span class="saved-type">Itinerary</span>
+                </a>
+                <a href="#" class="saved-item">
+                    <div class="saved-info">
+                        <h4>Best Onsen Towns Near Tokyo</h4>
+                        <span class="meta">by @quietjourneys &middot; 1.4K saves</span>
+                    </div>
+                    <span class="saved-type">Guide</span>
+                </a>
+                <a href="#" class="saved-item">
+                    <div class="saved-info">
+                        <h4>Norway Northern Lights: 5 Days</h4>
+                        <span class="meta">by @arctic_wanderer &middot; 670 saves</span>
+                    </div>
+                    <span class="saved-type">Itinerary</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Planner -->
+    <section class="ai-subtle">
+        <div class="container">
+            <div class="ai-card">
+                <div class="ai-inner">
+                    <span class="ai-badge">Pro</span>
+                    <p><strong>AI Trip Planner</strong> — Tell us your destination and dates. Get a full day-by-day itinerary in seconds.</p>
+                </div>
+                <a href="#" class="ai-link">Try it free &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explore -->
+    <section class="explore-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Explore</h2>
+                <a href="#">Browse all &rarr;</a>
+            </div>
+            <div class="explore-grid">
+                <a href="#" class="explore-card">
+                    <div class="explore-icon">&#128506;</div>
+                    <h4>Community Itineraries</h4>
+                    <p>Discover trip plans from travelers worldwide</p>
+                </a>
+                <a href="#" class="explore-card">
+                    <div class="explore-icon">&#128218;</div>
+                    <h4>Travel Guides</h4>
+                    <p>Insider tips and local knowledge</p>
+                </a>
+                <a href="#" class="explore-card">
+                    <div class="explore-icon">&#127757;</div>
+                    <h4>Destinations</h4>
+                    <p>Browse by country, city, or experience</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Tripscape</p>
+    </footer>
+</body>
+</html>
