@@ -229,7 +229,11 @@ body {
     color: var(--text-light);
     font-size: 0.95rem;
     line-height: 1.7;
-    max-width: 560px;
+    max-width: 100%;
+}
+
+.final-description p {
+    margin-bottom: 0.75rem;
 }
 
 /* ---- Footer ---- */
