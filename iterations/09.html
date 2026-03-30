@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 09: Terracotta Polaroid</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --terra: #C2714F;
+            --terra-light: #D4896A;
+            --slate: #475569;
+            --slate-light: #64748B;
+            --cream: #FAF7F2;
+            --cream-dark: #F0EBE3;
+            --white: #FFFFFF;
+            --text: #2D2D2D;
+            --text-light: #7A7A7A;
+            --border: #E4DDD4;
+            --gold: #D4A03C;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background: var(--cream);
+            line-height: 1.6;
+        }
+
+        .back-link {
+            position: fixed; bottom: 1.5rem; left: 1.5rem; font-size: 0.8rem;
+            color: var(--text-light); text-decoration: none; background: var(--white);
+            padding: 0.4rem 0.8rem; border-radius: 4px; border: 1px solid var(--border); z-index: 200;
+        }
+        .back-link:hover { color: var(--terra); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 3rem; }
+
+        /* ---- Nav ---- */
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.85rem 3rem; background: var(--slate); color: #fff;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #fff; }
+        .logo-icon { width: 32px; height: 32px; }
+        .logo-text { font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; }
+        .nav-links { display: flex; list-style: none; gap: 1.5rem; align-items: center; }
+        .nav-links a { text-decoration: none; color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .nav-links a.active { color: var(--terra-light); font-weight: 600; }
+        .nav-ai { font-size: 0.68rem !important; font-weight: 700 !important; padding: 0.28rem 0.6rem; border: 1.5px solid var(--gold); border-radius: 3px; color: var(--gold) !important; }
+        .nav-ai:hover { background: var(--gold); color: var(--slate) !important; }
+        .nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--terra); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; }
+
+        /* ---- Welcome ---- */
+        .welcome { padding: 2.5rem 0 1.5rem; }
+        .welcome-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.25rem; }
+        .welcome-text h1 { font-size: 1.8rem; font-weight: 700; color: var(--slate); }
+        .welcome-text p { font-size: 0.9rem; color: var(--text-light); }
+
+        /* Create + AI grouped together */
+        .create-group { display: flex; gap: 0.6rem; align-items: center; }
+        .btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.65rem 1.3rem; border-radius: 5px; font-size: 0.82rem; font-weight: 700; text-decoration: none; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-terra { background: var(--terra); color: #fff; }
+        .btn-terra:hover { background: var(--terra-light); }
+        .btn-outline { border: 1.5px solid var(--slate); color: var(--slate); background: transparent; }
+        .btn-outline:hover { background: var(--slate); color: #fff; }
+        .btn-ai { border: 1.5px dashed var(--gold); color: var(--gold); background: transparent; font-size: 0.75rem; padding: 0.6rem 1rem; }
+        .btn-ai:hover { background: var(--gold); color: #fff; }
+        .btn-ai .pro-tag { font-size: 0.55rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: var(--gold); color: #fff; padding: 0.1rem 0.3rem; border-radius: 2px; margin-right: 0.2rem; }
+        .btn-ai:hover .pro-tag { background: #fff; color: var(--gold); }
+
+        /* Search */
+        .search-bar { display: flex; background: var(--white); border: 2px solid var(--border); border-radius: 5px; overflow: hidden; }
+        .search-bar input { flex: 1; padding: 0.65rem 1rem; border: none; font-size: 0.88rem; background: transparent; color: var(--text); outline: none; }
+        .search-bar input::placeholder { color: var(--text-light); }
+        .search-btn { padding: 0.65rem 1.2rem; background: var(--terra); border: none; color: #fff; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+
+        /* ---- Upcoming ---- */
+        .upcoming { padding: 1.25rem 0; }
+        .upcoming-card { background: var(--white); border: 1px solid var(--border); border-radius: 5px; padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+        .upcoming-left { display: flex; align-items: center; gap: 1rem; }
+        .countdown { text-align: center; min-width: 55px; }
+        .countdown-num { font-size: 1.8rem; font-weight: 800; color: var(--terra); line-height: 1; }
+        .countdown-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .upcoming-info h3 { font-size: 0.95rem; font-weight: 700; }
+        .upcoming-info .meta { font-size: 0.72rem; color: var(--text-light); }
+        .upcoming-link { font-size: 0.75rem; font-weight: 600; color: var(--terra); text-decoration: none; }
+        .upcoming-link:hover { text-decoration: underline; }
+
+        /* ---- Section Headers ---- */
+        .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
+        .section-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--slate); }
+        .section-header a { font-size: 0.72rem; font-weight: 600; color: var(--terra); text-decoration: none; }
+        .section-header a:hover { text-decoration: underline; }
+
+        /* ---- Itineraries — Polaroid ---- */
+        .itineraries { padding: 0 0 2rem; }
+        .polaroid-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+        .polaroid {
+            background: var(--white); padding: 0.55rem 0.55rem 0.85rem; border-radius: 2px;
+            box-shadow: 2px 3px 10px rgba(0,0,0,0.08); text-decoration: none; color: inherit;
+            display: block; transition: transform 0.2s; position: relative;
+        }
+        .polaroid:nth-child(1) { transform: rotate(-1.2deg); }
+        .polaroid:nth-child(2) { transform: rotate(0.8deg); }
+        .polaroid:nth-child(3) { transform: rotate(-0.5deg); }
+        .polaroid:nth-child(4) { transform: rotate(1.3deg); }
+        .polaroid:hover { transform: rotate(0deg) translateY(-4px); box-shadow: 3px 6px 18px rgba(0,0,0,0.12); }
+
+        .polaroid-photo {
+            height: 130px; border-radius: 1px; margin-bottom: 0.6rem;
+            display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
+        }
+        .photo-tokyo { background: linear-gradient(135deg, #FFB7C5, #FF8FA3 40%, #C4A4CC 70%, #7B6F8E); }
+        .photo-patagonia { background: linear-gradient(135deg, #87CEEB, #4A90A4 35%, #6B8E73 60%, #8B7355); }
+        .photo-iceland { background: linear-gradient(135deg, #6FB1C7, #94D1BE 40%, #3A5F3A 70%, #1A2F1A); }
+        .photo-berlin { background: linear-gradient(135deg, #D4A574, #BF8C5C 40%, #8B6F47 65%, #4A4A4A); }
+
+        .polaroid-caption { padding: 0 0.2rem; }
+        .polaroid-caption h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.08rem; }
+        .polaroid-caption .meta { font-size: 0.7rem; color: var(--text-light); }
+
+        /* ---- Places Traveled ---- */
+        .places { padding: 0 0 2rem; }
+        .places-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+        .places-body { display: grid; grid-template-columns: 260px 1fr; }
+
+        .places-stats { padding: 1.25rem; border-right: 1px solid var(--border); }
+        .places-stats-label { font-size: 0.78rem; color: var(--text-light); margin-bottom: 0.6rem; }
+        .stats-main { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 0.8rem; }
+        .donut { width: 54px; height: 54px; border-radius: 50%; background: conic-gradient(var(--terra) 0deg 75.6deg, var(--border) 75.6deg 360deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .donut-inner { width: 38px; height: 38px; border-radius: 50%; background: var(--white); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; color: var(--terra); }
+        .country-count { font-size: 2rem; font-weight: 800; line-height: 1; }
+        .country-count-label { font-size: 0.62rem; color: var(--text-light); }
+        .stats-links { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+        .stats-link { font-size: 0.72rem; color: var(--terra); text-decoration: none; }
+        .stats-link:hover { text-decoration: underline; }
+        .continents-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 0.3rem; }
+        .continents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.12rem; font-size: 0.7rem; }
+        .continent-row { color: var(--text-light); }
+        .continent-row strong { color: var(--text); font-weight: 600; }
+        .continent-visited { color: var(--terra); font-weight: 700; }
+        .add-places-btn { display: inline-block; margin-top: 0.65rem; padding: 0.35rem 0.75rem; border-radius: 4px; background: var(--terra); color: #fff; font-size: 0.68rem; font-weight: 600; text-decoration: none; }
+        .add-places-btn:hover { background: var(--terra-light); }
+
+        .places-map { padding: 0.85rem; background: var(--cream-dark); display: flex; align-items: center; }
+        .places-map svg { width: 100%; height: auto; }
+        .places-map svg .water { fill: var(--cream-dark); }
+        .places-map svg .land { fill: #D5CFC6; stroke: #C5BDB2; stroke-width: 0.5; }
+        .places-map svg .visited { fill: var(--terra); stroke: var(--terra-light); }
+        .places-map svg .visited:hover { fill: var(--slate); }
+
+        /* ---- Guides ---- */
+        .guides { padding: 0 0 2rem; }
+        .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .guide-card { background: var(--white); border: 1px solid var(--border); border-radius: 5px; padding: 1.1rem; text-decoration: none; color: inherit; transition: transform 0.2s; }
+        .guide-card:hover { transform: translateY(-2px); }
+        .guide-card h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .guide-card p { font-size: 0.75rem; color: var(--text-light); margin-bottom: 0.35rem; }
+        .guide-tags { display: flex; gap: 0.25rem; }
+        .guide-tag { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.1rem: 0.35rem; border-radius: 3px; background: var(--cream); color: var(--text-light); border: 1px solid var(--border); padding: 0.1rem 0.35rem; }
+
+        /* ---- Discover (combined Trending + Explore) ---- */
+        .discover { padding: 0 0 3rem; }
+
+        .discover-pills {
+            display: flex; gap: 0.5rem; margin-bottom: 1.25rem;
+        }
+        .pill {
+            font-size: 0.72rem; font-weight: 600; padding: 0.35rem 0.85rem;
+            border-radius: 20px; border: 1.5px solid var(--border); color: var(--text-light);
+            text-decoration: none; transition: all 0.2s;
+        }
+        .pill:hover { border-color: var(--terra); color: var(--terra); }
+        .pill.active { background: var(--terra); border-color: var(--terra); color: #fff; }
+
+        .discover-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+        }
+
+        .discover-card {
+            background: var(--white); border: 1px solid var(--border); border-radius: 6px;
+            overflow: hidden; text-decoration: none; color: inherit; transition: transform 0.2s;
+        }
+        .discover-card:hover { transform: translateY(-2px); }
+
+        .discover-visual {
+            height: 80px; display: flex; align-items: center; justify-content: center; font-size: 2rem;
+        }
+        .vis-lisbon { background: linear-gradient(135deg, #F2C94C, #E8A838 50%, #D4825A); }
+        .vis-seoul { background: linear-gradient(135deg, #C8A2C8, #9B72AA 50%, #6B4C8A); }
+        .vis-norway { background: linear-gradient(135deg, #4A90A4, #3A7A8A 50%, #2A5A6A); }
+        .vis-kyoto { background: linear-gradient(135deg, #FFB7C5, #E8A0B0 50%, #C08090); }
+
+        .discover-body { padding: 0.75rem; }
+        .discover-body h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.08rem; }
+        .discover-body span { font-size: 0.65rem; color: var(--text-light); }
+        .discover-type { display: inline-block; font-size: 0.52rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.1rem 0.35rem; border-radius: 3px; background: var(--cream); color: var(--terra); margin-bottom: 0.25rem; }
+
+        /* ---- Footer ---- */
+        footer { background: var(--slate); color: rgba(255,255,255,0.4); text-align: center; padding: 1.5rem; font-size: 0.7rem; letter-spacing: 0.5px; }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 1000px) {
+            .polaroid-grid { grid-template-columns: repeat(2, 1fr); }
+            .discover-grid { grid-template-columns: repeat(2, 1fr); }
+            .polaroid { transform: rotate(0deg) !important; }
+        }
+        @media (max-width: 768px) {
+            .guide-grid { grid-template-columns: 1fr; }
+            .places-body { grid-template-columns: 1fr; }
+            .places-stats { border-right: none; border-bottom: 1px solid var(--border); }
+        }
+        @media (max-width: 600px) {
+            nav { padding: 0.85rem 1.5rem; }
+            .container { padding: 0 1.5rem; }
+            .welcome-row { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+            .create-group { flex-wrap: wrap; }
+            .polaroid-grid { grid-template-columns: 1fr; }
+            .discover-grid { grid-template-columns: 1fr; }
+            .discover-pills { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; All iterations</a>
+
+    <nav>
+        <a href="#" class="logo">
+            <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="14" stroke="#fff" stroke-width="1.5" fill="none"/>
+                <ellipse cx="16" cy="16" rx="8" ry="14" stroke="#fff" stroke-width="0.7" fill="none"/>
+                <line x1="2" y1="11" x2="30" y2="11" stroke="#fff" stroke-width="0.5"/>
+                <line x1="2" y1="21" x2="30" y2="21" stroke="#fff" stroke-width="0.5"/>
+                <path d="M22 7 L24 6 L25 7.5 L23 9 L26 11 L25 12 L22 10 L20 12 L19 11Z" fill="#C2714F"/>
+                <path d="M7 22 Q13 13, 22 7" stroke="#C2714F" stroke-width="0.7" fill="none" stroke-dasharray="2,2"/>
+            </svg>
+            <span class="logo-text">Tripscape</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">My Trips</a></li>
+            <li><a href="#">Guides</a></li>
+            <li><a href="#">Discover</a></li>
+            <li><a href="#" class="nav-ai">AI Planner</a></li>
+            <li><div class="nav-avatar">HZ</div></li>
+        </ul>
+    </nav>
+
+    <!-- Welcome -->
+    <section class="welcome">
+        <div class="container">
+            <div class="welcome-row">
+                <div class="welcome-text">
+                    <h1>Welcome back, Helena</h1>
+                    <p>Ready for your next departure?</p>
+                </div>
+                <div class="create-group">
+                    <a href="#" class="btn btn-terra">+ New Itinerary</a>
+                    <a href="#" class="btn btn-outline">+ Write a Guide</a>
+                    <a href="#" class="btn btn-ai"><span class="pro-tag">Pro</span> AI Trip Planner</a>
+                </div>
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search destinations, itineraries, or guides..." disabled>
+                <button class="search-btn" disabled>Search</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming -->
+    <section class="upcoming">
+        <div class="container">
+            <div class="upcoming-card">
+                <div class="upcoming-left">
+                    <div class="countdown"><span class="countdown-num">12</span><span class="countdown-label">days</span></div>
+                    <div class="upcoming-info"><h3>Tokyo &amp; Kyoto</h3><span class="meta">Apr 8 – 18, 2025 &middot; 10 days &middot; 14 stops</span></div>
+                </div>
+                <a href="#" class="upcoming-link">View itinerary &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Itineraries — Polaroids -->
+    <section class="itineraries">
+        <div class="container">
+            <div class="section-header"><h2>My Itineraries</h2><a href="#">View all &rarr;</a></div>
+            <div class="polaroid-grid">
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-tokyo">&#127983;</div>
+                    <div class="polaroid-caption"><h3>Tokyo &amp; Kyoto</h3><span class="meta">10 days &middot; 14 stops &middot; Apr 2025</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-patagonia">&#9968;</div>
+                    <div class="polaroid-caption"><h3>Patagonia Trek</h3><span class="meta">14 days &middot; 8 stops &middot; Jan 2025</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-iceland">&#127956;</div>
+                    <div class="polaroid-caption"><h3>Iceland Ring Road</h3><span class="meta">8 days &middot; 22 stops &middot; Aug 2024</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-berlin">&#127939;</div>
+                    <div class="polaroid-caption"><h3>Berlin Marathon</h3><span class="meta">5 days &middot; 9 stops &middot; Sep 2025</span></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Places Traveled -->
+    <section class="places">
+        <div class="container">
+            <div class="section-header"><h2>Places Traveled</h2></div>
+            <div class="places-card">
+                <div class="places-body">
+                    <div class="places-stats">
+                        <div class="places-stats-label">You have been to...</div>
+                        <div class="stats-main">
+                            <div class="donut"><div class="donut-inner">21%</div></div>
+                            <div><div class="country-count">41</div><div class="country-count-label">Out of 195 UN Countries</div></div>
+                        </div>
+                        <div class="stats-links">
+                            <a href="#" class="stats-link">&#9679; My Continents</a>
+                            <a href="#" class="stats-link">&#9679; My Countries</a>
+                            <a href="#" class="stats-link">&#9679; My Cities</a>
+                        </div>
+                        <div class="continents-label">UN Countries</div>
+                        <div class="continents-grid">
+                            <span class="continent-row"><strong>Africa:</strong> <span class="continent-visited">5</span>/54</span>
+                            <span class="continent-row"><strong>N. America:</strong> <span class="continent-visited">3</span>/23</span>
+                            <span class="continent-row"><strong>Asia:</strong> <span class="continent-visited">8</span>/48</span>
+                            <span class="continent-row"><strong>Oceania:</strong> <span class="continent-visited">1</span>/14</span>
+                            <span class="continent-row"><strong>Europe:</strong> <span class="continent-visited">20</span>/46</span>
+                            <span class="continent-row"><strong>S. America:</strong> <span class="continent-visited">4</span>/12</span>
+                            <span class="continent-row"><strong>Antarctica:</strong> <span class="continent-visited">0</span>/2</span>
+                        </div>
+                        <a href="#" class="add-places-btn">+ Add visited places</a>
+                    </div>
+                    <div class="places-map">
+                        <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="water" x="0" y="0" width="1000" height="500"/>
+                            <path class="land visited" d="M100,30 L220,20 L270,50 L280,100 L270,140 L250,170 L200,180 L160,170 L130,140 L110,100 L95,60Z"/>
+                            <path class="land visited" d="M140,170 L190,168 L200,200 L185,225 L160,220 L135,200Z"/>
+                            <path class="land" d="M210,190 L240,185 L245,200 L225,205Z"/>
+                            <path class="land visited" d="M190,235 L250,225 L290,260 L300,320 L285,380 L260,410 L230,400 L210,360 L200,300 L185,260Z"/>
+                            <path class="land" d="M280,10 L320,5 L345,30 L335,60 L310,65 L280,45Z"/>
+                            <path class="land visited" d="M370,50 L392,44 L400,58 L388,65 L372,60Z"/>
+                            <path class="land visited" d="M395,80 L412,74 L418,98 L408,108 L395,100Z"/>
+                            <path class="land visited" d="M430,28 L450,20 L465,40 L468,75 L458,88 L440,80 L432,55Z"/>
+                            <path class="land visited" d="M400,100 L440,92 L455,115 L450,145 L430,155 L405,150 L395,130Z"/>
+                            <path class="land visited" d="M385,148 L415,142 L422,162 L412,175 L388,172Z"/>
+                            <path class="land visited" d="M445,80 L490,72 L510,95 L505,130 L480,138 L455,130 L448,105Z"/>
+                            <path class="land visited" d="M435,130 L465,125 L475,150 L468,172 L450,175 L435,160Z"/>
+                            <path class="land" d="M490,15 L650,5 L750,20 L780,50 L770,72 L700,62 L600,58 L530,65 L500,50Z"/>
+                            <path class="land visited" d="M480,135 L520,128 L540,140 L535,155 L510,160 L485,152Z"/>
+                            <path class="land visited" d="M375,178 L460,168 L480,185 L475,210 L440,220 L390,215 L372,198Z"/>
+                            <path class="land" d="M370,220 L420,225 L430,260 L415,285 L385,280 L368,255Z"/>
+                            <path class="land visited" d="M440,225 L500,218 L515,250 L510,295 L490,310 L460,305 L440,275Z"/>
+                            <path class="land visited" d="M430,310 L490,305 L510,335 L505,375 L480,390 L450,385 L430,355Z"/>
+                            <path class="land visited" d="M510,155 L555,148 L570,172 L565,205 L540,215 L515,210 L505,185Z"/>
+                            <path class="land" d="M560,85 L620,78 L645,100 L638,128 L610,135 L575,128 L560,108Z"/>
+                            <path class="land visited" d="M590,155 L630,145 L650,175 L645,215 L625,240 L600,235 L585,205 L580,178Z"/>
+                            <path class="land visited" d="M635,65 L720,55 L758,82 L750,120 L720,138 L685,140 L660,128 L645,100Z"/>
+                            <path class="land visited" d="M770,80 L785,72 L790,100 L782,118 L770,112Z"/>
+                            <path class="land visited" d="M752,95 L765,90 L768,110 L758,115Z"/>
+                            <path class="land visited" d="M660,155 L700,148 L718,175 L712,210 L690,218 L665,212 L655,185Z"/>
+                            <path class="land visited" d="M670,225 L730,218 L760,235 L755,255 L720,260 L680,255 L668,242Z"/>
+                            <path class="land" d="M720,310 L790,298 L835,320 L840,360 L815,385 L775,390 L740,378 L720,348Z"/>
+                            <path class="land" d="M855,370 L865,365 L870,390 L862,400Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guides -->
+    <section class="guides">
+        <div class="container">
+            <div class="section-header"><h2>My Guides</h2><a href="#">View all &rarr;</a></div>
+            <div class="guide-grid">
+                <a href="#" class="guide-card"><h3>The Perfect 3 Days in Kyoto</h3><p>Temples, tea ceremonies, and hidden gardens for first-timers.</p><div class="guide-tags"><span class="guide-tag">Japan</span><span class="guide-tag">Culture</span></div></a>
+                <a href="#" class="guide-card"><h3>Hiking the W Trek</h3><p>Gear, timing, refugios — the honest truth about Patagonia.</p><div class="guide-tags"><span class="guide-tag">Chile</span><span class="guide-tag">Hiking</span></div></a>
+                <a href="#" class="guide-card"><h3>NYC Marathon as a Tourist</h3><p>Balancing race prep with enjoying the city.</p><div class="guide-tags"><span class="guide-tag">NYC</span><span class="guide-tag">Running</span></div></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discover (combined Trending + Explore) -->
+    <section class="discover">
+        <div class="container">
+            <div class="section-header"><h2>Discover</h2><a href="#">Browse all &rarr;</a></div>
+            <div class="discover-pills">
+                <a href="#" class="pill active">Trending</a>
+                <a href="#" class="pill">Itineraries</a>
+                <a href="#" class="pill">Guides</a>
+                <a href="#" class="pill">Destinations</a>
+            </div>
+            <div class="discover-grid">
+                <a href="#" class="discover-card">
+                    <div class="discover-visual vis-lisbon">&#127987;</div>
+                    <div class="discover-body"><span class="discover-type">Destination</span><h4>Lisbon, Portugal</h4><span>342 itineraries &middot; 89 guides</span></div>
+                </a>
+                <a href="#" class="discover-card">
+                    <div class="discover-visual vis-seoul">&#127884;</div>
+                    <div class="discover-body"><span class="discover-type">Destination</span><h4>Seoul, South Korea</h4><span>287 itineraries &middot; 64 guides</span></div>
+                </a>
+                <a href="#" class="discover-card">
+                    <div class="discover-visual vis-norway">&#127966;</div>
+                    <div class="discover-body"><span class="discover-type">Itinerary</span><h4>Lofoten Northern Lights</h4><span>by @arctic_wanderer &middot; 670 saves</span></div>
+                </a>
+                <a href="#" class="discover-card">
+                    <div class="discover-visual vis-kyoto">&#128218;</div>
+                    <div class="discover-body"><span class="discover-type">Guide</span><h4>48 Hours in Lisbon</h4><span>by @maria_adventures &middot; 2.1K saves</span></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer><p>&copy; 2026 Tripscape</p></footer>
+</body>
+</html>
