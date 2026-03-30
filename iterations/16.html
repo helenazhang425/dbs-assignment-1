@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 16: Alpine Trail</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: #1C2B1A;
+            min-height: 100vh;
+            background: #E8E2D4;
+        }
+
+        .back-link {
+            position: fixed; bottom: 1rem; right: 1rem; font-size: 0.68rem;
+            color: #6A7A5A; text-decoration: none; background: rgba(255,255,255,0.9);
+            padding: 0.3rem 0.6rem; border: 1px solid #B8C8A8; z-index: 200;
+        }
+
+        /* ======== MOUNTAIN SCENE ======== */
+        .mountain-scene {
+            position: relative;
+            min-height: 480px;
+            overflow: hidden;
+            /* Sky gradient — dawn over the Dolomites */
+            background: linear-gradient(180deg,
+                #2A3A5A 0%,
+                #4A6A8A 15%,
+                #8AAAC8 30%,
+                #C8D8E8 42%,
+                #F0DCC8 52%,
+                #E8C8A8 58%,
+                #D4B898 62%,
+                transparent 62%
+            );
+        }
+
+        /* Far mountain range — jagged Dolomite peaks */
+        .peaks-far {
+            position: absolute;
+            bottom: 120px;
+            left: 0; right: 0;
+            height: 200px;
+        }
+
+        .peak-far {
+            position: absolute;
+            bottom: 0;
+            border-left: solid transparent;
+            border-right: solid transparent;
+            border-bottom-style: solid;
+        }
+
+        .pf1 { left: -2%; border-left-width: 80px; border-right-width: 100px; border-bottom-width: 180px; border-bottom-color: #8A9AAA; }
+        .pf2 { left: 8%; border-left-width: 60px; border-right-width: 70px; border-bottom-width: 200px; border-bottom-color: #7A8A9A; }
+        .pf3 { left: 18%; border-left-width: 90px; border-right-width: 50px; border-bottom-width: 170px; border-bottom-color: #9AAAB8; }
+        .pf4 { left: 30%; border-left-width: 70px; border-right-width: 80px; border-bottom-width: 190px; border-bottom-color: #8898A8; }
+        .pf5 { left: 42%; border-left-width: 55px; border-right-width: 90px; border-bottom-width: 210px; border-bottom-color: #7888A0; }
+        .pf6 { left: 55%; border-left-width: 85px; border-right-width: 60px; border-bottom-width: 175px; border-bottom-color: #8A98AA; }
+        .pf7 { left: 66%; border-left-width: 50px; border-right-width: 80px; border-bottom-width: 195px; border-bottom-color: #7A8898; }
+        .pf8 { left: 78%; border-left-width: 75px; border-right-width: 65px; border-bottom-width: 185px; border-bottom-color: #8898A8; }
+        .pf9 { left: 88%; border-left-width: 90px; border-right-width: 70px; border-bottom-width: 170px; border-bottom-color: #9AA8B8; }
+
+        /* Snow caps */
+        .snow {
+            position: absolute; bottom: 0;
+            border-left: solid transparent; border-right: solid transparent; border-bottom-style: solid;
+        }
+        .s1 { left: -2%; border-left-width: 30px; border-right-width: 38px; border-bottom-width: 40px; border-bottom-color: #E8E4E0; bottom: 140px; }
+        .s2 { left: 8%; border-left-width: 22px; border-right-width: 26px; border-bottom-width: 45px; border-bottom-color: #F0ECE8; bottom: 155px; }
+        .s4 { left: 30%; border-left-width: 26px; border-right-width: 30px; border-bottom-width: 42px; border-bottom-color: #E8E4E0; bottom: 148px; }
+        .s5 { left: 42%; border-left-width: 20px; border-right-width: 34px; border-bottom-width: 50px; border-bottom-color: #F0ECE8; bottom: 160px; }
+        .s7 { left: 66%; border-left-width: 18px; border-right-width: 30px; border-bottom-width: 44px; border-bottom-color: #E8E4E0; bottom: 151px; }
+        .s8 { left: 78%; border-left-width: 28px; border-right-width: 24px; border-bottom-width: 40px; border-bottom-color: #F0ECE8; bottom: 145px; }
+
+        /* Near mountains — darker, forest-covered */
+        .peaks-near {
+            position: absolute;
+            bottom: 60px;
+            left: 0; right: 0;
+            height: 140px;
+        }
+
+        .pn1 { position: absolute; bottom: 0; left: -5%; border-left: 120px solid transparent; border-right: 140px solid transparent; border-bottom: 120px solid #4A6A48; }
+        .pn2 { position: absolute; bottom: 0; left: 15%; border-left: 100px solid transparent; border-right: 130px solid transparent; border-bottom: 140px solid #3A5A38; }
+        .pn3 { position: absolute; bottom: 0; left: 38%; border-left: 140px solid transparent; border-right: 100px solid transparent; border-bottom: 110px solid #4A6848; }
+        .pn4 { position: absolute; bottom: 0; right: 20%; border-left: 110px solid transparent; border-right: 120px solid transparent; border-bottom: 130px solid #3A5838; }
+        .pn5 { position: absolute; bottom: 0; right: -5%; border-left: 130px solid transparent; border-right: 100px solid transparent; border-bottom: 115px solid #4A6A48; }
+
+        /* Forest treeline */
+        .treeline {
+            position: absolute;
+            bottom: 0;
+            left: 0; right: 0;
+            height: 80px;
+            background: #2A4A28;
+            /* Jagged tree tops */
+            clip-path: polygon(
+                0% 40%, 2% 20%, 4% 35%, 6% 15%, 8% 30%, 10% 10%, 12% 28%,
+                14% 8%, 16% 25%, 18% 12%, 20% 32%, 22% 18%, 24% 5%, 26% 22%,
+                28% 10%, 30% 28%, 32% 15%, 34% 30%, 36% 8%, 38% 25%, 40% 12%,
+                42% 35%, 44% 18%, 46% 5%, 48% 20%, 50% 8%, 52% 28%, 54% 15%,
+                56% 32%, 58% 10%, 60% 22%, 62% 5%, 64% 18%, 66% 30%, 68% 12%,
+                70% 25%, 72% 8%, 74% 28%, 76% 15%, 78% 35%, 80% 10%, 82% 22%,
+                84% 5%, 86% 20%, 88% 32%, 90% 12%, 92% 25%, 94% 8%, 96% 20%,
+                98% 30%, 100% 15%, 100% 100%, 0% 100%
+            );
+        }
+
+        /* Trail markers — small elements */
+        .trail-marker {
+            position: absolute; z-index: 5;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #E85040;
+            box-shadow: 0 0 6px rgba(232,80,64,0.4);
+        }
+        .tm1 { bottom: 90px; left: 25%; }
+        .tm2 { bottom: 110px; left: 45%; }
+        .tm3 { bottom: 130px; right: 30%; }
+
+        /* Trail path connecting markers */
+        .trail-path {
+            position: absolute; z-index: 4;
+            bottom: 85px; left: 20%; width: 55%;
+            height: 60px;
+            border-bottom: 2px dashed rgba(232,80,64,0.3);
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* Nav */
+        nav {
+            position: relative; z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.85rem 2.5rem;
+        }
+        .logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #FFF; }
+        .logo-icon { width: 30px; height: 30px; }
+        .logo-text { font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; list-style: none; gap: 1.25rem; align-items: center; }
+        .nav-links a { text-decoration: none; color: rgba(255,255,255,0.6); font-size: 0.75rem; font-weight: 600; transition: color 0.2s; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .nav-links a:hover { color: #FFF; }
+        .nav-links a.active { color: #FFF; }
+        .nav-ai { border: 1px solid rgba(255,255,255,0.4); padding: 0.15rem 0.45rem; font-size: 0.6rem !important; text-shadow: none; }
+        .nav-ai:hover { background: rgba(255,255,255,0.2); }
+        .nav-avatar { width: 26px; height: 26px; border-radius: 50%; background: #E85040; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 700; }
+
+        /* Hero */
+        .hero {
+            position: relative; z-index: 10;
+            text-align: center; padding: 3rem 2rem 8rem;
+            color: #FFF;
+        }
+        .hero-kicker { font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; opacity: 0.6; margin-bottom: 0.4rem; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .hero h1 { font-family: Georgia, serif; font-size: 2.8rem; font-weight: 400; line-height: 1.15; margin-bottom: 0.4rem; text-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+        .hero h1 em { font-style: italic; color: #FFD0A0; }
+        .hero p { font-size: 0.9rem; opacity: 0.7; font-family: Georgia, serif; font-style: italic; margin-bottom: 1.5rem; max-width: 420px; margin-left: auto; margin-right: auto; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+
+        .hero-btns { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+        .btn-trail { padding: 0.65rem 1.5rem; font-size: 0.75rem; font-weight: 700; text-decoration: none; border-radius: 3px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-orange { background: #E85040; color: #FFF; border: none; }
+        .btn-orange:hover { background: #F06858; }
+        .btn-white { background: rgba(255,255,255,0.15); color: #FFF; border: 1.5px solid rgba(255,255,255,0.4); backdrop-filter: blur(4px); }
+        .btn-white:hover { background: rgba(255,255,255,0.25); }
+        .btn-gold-t { background: transparent; color: #E8C878; border: 1.5px dashed #C8A858; font-size: 0.68rem; }
+        .btn-gold-t:hover { background: rgba(200,168,88,0.15); }
+        .pro-tag { font-size: 0.48rem; background: #C8A858; color: #1C2B1A; padding: 0.05rem 0.2rem; margin-right: 0.1rem; font-weight: 800; }
+
+        /* ======== MAIN CONTENT — trail lodge ======== */
+        .lodge {
+            background: #F5F0E6;
+            /* Subtle topographic contour lines */
+            background-image:
+                repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, transparent 358deg, rgba(180,170,150,0.08) 358deg, rgba(180,170,150,0.08) 360deg),
+                repeating-radial-gradient(circle at 30% 40%, transparent 0px, transparent 80px, rgba(180,170,150,0.06) 80px, rgba(180,170,150,0.06) 81px),
+                repeating-radial-gradient(circle at 70% 60%, transparent 0px, transparent 60px, rgba(180,170,150,0.06) 60px, rgba(180,170,150,0.06) 61px);
+            padding: 2rem 2.5rem 0;
+            border-top: 5px solid #3A5A38;
+        }
+
+        .section-label {
+            font-size: 0.58rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 3px; color: #5A7A58;
+            margin-bottom: 0.75rem; padding-bottom: 0.3rem;
+            border-bottom: 2px solid #1C2B1A;
+            display: flex; justify-content: space-between;
+        }
+        .section-label a { font-weight: 600; letter-spacing: 1px; color: #8A9A78; text-decoration: none; font-size: 0.55rem; }
+        .section-label a:hover { text-decoration: underline; }
+
+        /* ---- Itineraries — trail log cards ---- */
+        .trail-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .trail-card {
+            background: #FFF; border: 2px solid #C8D0B8;
+            border-radius: 3px; overflow: hidden;
+            text-decoration: none; color: inherit; display: block;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .trail-card:hover { transform: translateY(-3px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+
+        /* Mini landscape illustration per card */
+        .trail-scene {
+            height: 80px; position: relative; overflow: hidden;
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+
+        .scene-japan {
+            background: linear-gradient(180deg, #E8B8C0 0%, #F0D0D4 40%, #C8D8C0 70%, #88A880 100%);
+        }
+        .scene-andes {
+            background: linear-gradient(180deg, #A8C8E8 0%, #C8D8E0 35%, #A0B898 60%, #688060 100%);
+        }
+        .scene-nordic {
+            background: linear-gradient(180deg, #88B8D0 0%, #A8D0D8 35%, #60A078 60%, #3A6838 100%);
+        }
+        .scene-euro {
+            background: linear-gradient(180deg, #E0D0B8 0%, #D8C8A8 35%, #B8C0A0 60%, #8A9A70 100%);
+        }
+
+        /* Tiny mountain silhouettes in each scene */
+        .trail-scene::before {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 35px;
+            clip-path: polygon(0% 60%, 10% 30%, 18% 50%, 28% 15%, 38% 45%, 48% 10%, 58% 40%, 68% 20%, 78% 50%, 88% 25%, 100% 45%, 100% 100%, 0% 100%);
+        }
+        .scene-japan::before { background: rgba(136,168,128,0.5); }
+        .scene-andes::before { background: rgba(104,128,96,0.5); }
+        .scene-nordic::before { background: rgba(58,104,56,0.5); }
+        .scene-euro::before { background: rgba(138,154,112,0.5); }
+
+        .trail-scene .t-emoji {
+            position: relative; z-index: 1; font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+        }
+
+        .trail-body { padding: 0.65rem 0.75rem; }
+        .trail-body h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.05rem; }
+        .trail-body .sub { font-size: 0.6rem; color: #8A9A78; }
+        .trail-body .tag { display: inline-block; margin-top: 0.25rem; font-size: 0.5rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: #E8F0E0; color: #5A7A58; padding: 0.1rem 0.35rem; }
+
+        /* ---- Guides — field notebook entries ---- */
+        .notebook-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .notebook-card {
+            background: #FFFDF5;
+            border: 1px solid #D4D0C0;
+            border-left: 4px solid #E85040;
+            padding: 1rem;
+            text-decoration: none; color: inherit;
+            transition: transform 0.2s;
+            /* Notebook ruled lines */
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 22px, #E8E4D8 22px, #E8E4D8 23px);
+            background-position: 0 1rem;
+        }
+        .notebook-card:hover { transform: translateY(-2px); }
+        .notebook-card h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.15rem; }
+        .notebook-card p { font-size: 0.65rem; color: #7A8A6A; line-height: 1.5; }
+        .notebook-card .tags { font-size: 0.48rem; color: #E85040; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; margin-top: 0.25rem; }
+
+        /* ---- Places Traveled ---- */
+        .places-section { margin-bottom: 2rem; }
+
+        .places-wrap {
+            background: #FFF; border: 2px solid #C8D0B8;
+            border-radius: 3px; overflow: hidden;
+            display: grid; grid-template-columns: 280px 1fr;
+        }
+
+        .places-stats { padding: 1.15rem; border-right: 2px solid #D8E0D0; }
+        .places-stats .section-label { margin-bottom: 0.5rem; border-bottom-color: #C8D0B8; }
+        .p-big { display: flex; align-items: baseline; gap: 0.35rem; margin-bottom: 0.08rem; }
+        .p-num { font-family: Georgia, serif; font-size: 2.8rem; font-weight: 700; color: #E85040; line-height: 1; }
+        .p-lbl { font-size: 0.62rem; color: #8A9A78; }
+        .p-pct { font-size: 0.6rem; color: #8A9A78; margin-bottom: 0.6rem; }
+        .p-pct strong { color: #5A7A58; }
+
+        .p-bar { height: 5px; background: #E8E4D8; margin-bottom: 0.6rem; border-radius: 2px; }
+        .p-fill { height: 100%; width: 21%; background: linear-gradient(90deg, #5A7A58, #88A880); border-radius: 2px; }
+
+        .p-links { display: flex; flex-direction: column; gap: 0.18rem; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: 1px solid #E8E0D0; }
+        .p-links a { font-size: 0.62rem; color: #5A7A58; text-decoration: none; }
+        .p-links a:hover { text-decoration: underline; }
+        .cont-label { font-size: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #A8B898; margin-bottom: 0.2rem; }
+        .cont-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.08rem; font-size: 0.6rem; }
+        .cont-row { color: #8A9A78; }
+        .cont-row strong { color: #1C2B1A; }
+        .cont-v { color: #E85040; font-weight: 700; }
+        .add-link { display: inline-block; margin-top: 0.5rem; font-size: 0.55rem; font-weight: 700; color: #5A7A58; text-decoration: none; border-bottom: 1px solid #5A7A58; }
+
+        .places-map { padding: 0.6rem; background: #EAE4D4; display: flex; align-items: center; }
+        .places-map svg { width: 100%; max-height: 200px; }
+        .places-map svg .water { fill: #DDD8C8; }
+        .places-map svg .land { fill: #C8C0B0; stroke: #B8B0A0; stroke-width: 0.5; }
+        .places-map svg .visited { fill: #5A7A58; stroke: #4A6A48; }
+        .places-map svg .visited:hover { fill: #E85040; }
+
+        /* ---- Bucket List — trail waypoints ---- */
+        .waypoint-section { margin-bottom: 2rem; }
+
+        .waypoint-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; }
+
+        .waypoint {
+            background: #FFF; border: 2px solid #C8D0B8;
+            border-radius: 3px; padding: 0.85rem; text-align: center;
+            text-decoration: none; color: inherit;
+            position: relative; transition: transform 0.2s;
+        }
+        .waypoint:hover { transform: translateY(-3px); }
+
+        /* Trail marker dot */
+        .waypoint::before {
+            content: ''; position: absolute; top: -6px; left: 50%; margin-left: -6px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #E85040; border: 2px solid #FFF;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+
+        .waypoint .wp-emoji { font-size: 1.3rem; margin-bottom: 0.2rem; }
+        .waypoint h4 { font-size: 0.75rem; font-weight: 700; }
+        .waypoint span { font-size: 0.55rem; color: #8A9A78; }
+
+        /* ---- Trending ---- */
+        .trend-section { margin-bottom: 2rem; }
+        .trend-list { display: flex; gap: 1rem; }
+        .trend-item {
+            flex: 1; background: #FFF; border: 2px solid #C8D0B8;
+            border-radius: 3px; display: flex; align-items: center;
+            gap: 0.6rem; padding: 0.7rem 0.85rem;
+            text-decoration: none; color: inherit; transition: transform 0.2s;
+        }
+        .trend-item:hover { transform: translateY(-2px); }
+        .trend-rank { font-family: Georgia, serif; font-size: 1.2rem; font-weight: 700; color: #D4D0C0; width: 24px; }
+        .trend-item h4 { font-size: 0.75rem; font-weight: 700; }
+        .trend-item span { font-size: 0.55rem; color: #8A9A78; }
+
+        /* ---- AI ---- */
+        .ai-bar {
+            background: #2A4A28; color: #A8B898;
+            padding: 0.65rem 2.5rem; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.62rem;
+        }
+        .ai-bar strong { color: #C8A858; }
+        .ai-bar a { color: #C8A858; text-decoration: none; border: 1px solid #C8A858; padding: 0.18rem 0.45rem; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-bar a:hover { background: #C8A858; color: #2A4A28; }
+
+        /* Footer */
+        footer {
+            background: #1C2B1A; color: #4A6A48;
+            text-align: center; padding: 1.25rem; font-size: 0.55rem;
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        /* ======== RESPONSIVE ======== */
+        @media (max-width: 900px) {
+            .trail-grid { grid-template-columns: repeat(2, 1fr); }
+            .notebook-grid { grid-template-columns: 1fr; }
+            .places-wrap { grid-template-columns: 1fr; }
+            .places-stats { border-right: none; border-bottom: 2px solid #D8E0D0; }
+            .waypoint-grid { grid-template-columns: repeat(2, 1fr); }
+            .trend-list { flex-direction: column; }
+            .peaks-far, .peaks-near { display: none; }
+            .treeline { height: 40px; }
+            .mountain-scene { min-height: 300px; }
+        }
+        @media (max-width: 600px) {
+            nav { padding: 0.75rem 1.25rem; }
+            .hero { padding: 2rem 1.25rem 5rem; }
+            .hero h1 { font-size: 1.8rem; }
+            .lodge { padding: 1.5rem 1.25rem 0; }
+            .hero-btns { flex-direction: column; align-items: center; }
+            .trail-grid, .waypoint-grid { grid-template-columns: 1fr; }
+            .ai-bar { flex-direction: column; gap: 0.4rem; text-align: center; padding: 0.65rem 1.25rem; }
+            .snow { display: none; }
+            .trail-marker { display: none; }
+            .trail-path { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; Back</a>
+
+    <!-- ======== MOUNTAIN SCENE ======== -->
+    <div class="mountain-scene">
+
+        <!-- Far peaks with snow -->
+        <div class="peaks-far">
+            <div class="peak-far pf1"></div>
+            <div class="peak-far pf2"></div>
+            <div class="peak-far pf3"></div>
+            <div class="peak-far pf4"></div>
+            <div class="peak-far pf5"></div>
+            <div class="peak-far pf6"></div>
+            <div class="peak-far pf7"></div>
+            <div class="peak-far pf8"></div>
+            <div class="peak-far pf9"></div>
+            <div class="snow s1"></div>
+            <div class="snow s2"></div>
+            <div class="snow s4"></div>
+            <div class="snow s5"></div>
+            <div class="snow s7"></div>
+            <div class="snow s8"></div>
+        </div>
+
+        <!-- Near forest mountains -->
+        <div class="peaks-near">
+            <div class="pn1"></div>
+            <div class="pn2"></div>
+            <div class="pn3"></div>
+            <div class="pn4"></div>
+            <div class="pn5"></div>
+        </div>
+
+        <!-- Trail markers and path -->
+        <div class="trail-marker tm1"></div>
+        <div class="trail-marker tm2"></div>
+        <div class="trail-marker tm3"></div>
+        <div class="trail-path"></div>
+
+        <!-- Forest treeline -->
+        <div class="treeline"></div>
+
+        <!-- Nav -->
+        <nav>
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="0 0 30 30" fill="none">
+                    <!-- Mountain + compass -->
+                    <path d="M15 4 L26 24 L4 24Z" fill="none" stroke="#FFF" stroke-width="1.5"/>
+                    <path d="M15 4 L19 14 L11 14Z" fill="#E85040" opacity="0.8"/>
+                    <line x1="15" y1="24" x2="15" y2="28" stroke="#FFF" stroke-width="1"/>
+                    <circle cx="15" cy="28" r="1.5" fill="#E85040"/>
+                </svg>
+                <span class="logo-text">Tripscape</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Trips</a></li>
+                <li><a href="#">Guides</a></li>
+                <li><a href="#">Discover</a></li>
+                <li><a href="#" class="nav-ai">AI</a></li>
+                <li><div class="nav-avatar">HZ</div></li>
+            </ul>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero">
+            <p class="hero-kicker">Welcome back, Helena</p>
+            <h1>Chase the <em>horizon</em></h1>
+            <p>Build your trail, write your field notes, and map every summit you've reached.</p>
+            <div class="hero-btns">
+                <a href="#" class="btn-trail btn-orange">+ New Itinerary</a>
+                <a href="#" class="btn-trail btn-white">+ Write a Guide</a>
+                <a href="#" class="btn-trail btn-gold-t"><span class="pro-tag">Pro</span> AI Planner</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- ======== LODGE CONTENT ======== -->
+    <div class="lodge">
+
+        <!-- Itineraries — trail log cards -->
+        <div class="section-label">My Itineraries <a href="#">View All &rarr;</a></div>
+        <div class="trail-grid">
+            <a href="#" class="trail-card">
+                <div class="trail-scene scene-japan"><span class="t-emoji">&#127983;</span></div>
+                <div class="trail-body"><h3>Tokyo &amp; Kyoto</h3><span class="sub">14 stops</span><span class="tag">10 days &middot; Apr 2025</span></div>
+            </a>
+            <a href="#" class="trail-card">
+                <div class="trail-scene scene-andes"><span class="t-emoji">&#9968;</span></div>
+                <div class="trail-body"><h3>Patagonia Trek</h3><span class="sub">8 stops</span><span class="tag">14 days &middot; Jan 2025</span></div>
+            </a>
+            <a href="#" class="trail-card">
+                <div class="trail-scene scene-nordic"><span class="t-emoji">&#127956;</span></div>
+                <div class="trail-body"><h3>Iceland Ring Road</h3><span class="sub">22 stops</span><span class="tag">8 days &middot; Aug 2024</span></div>
+            </a>
+            <a href="#" class="trail-card">
+                <div class="trail-scene scene-euro"><span class="t-emoji">&#127939;</span></div>
+                <div class="trail-body"><h3>Berlin Marathon</h3><span class="sub">9 stops</span><span class="tag">5 days &middot; Sep 2025</span></div>
+            </a>
+        </div>
+
+        <!-- Guides — field notebook -->
+        <div class="section-label">My Guides <a href="#">View All &rarr;</a></div>
+        <div class="notebook-grid">
+            <a href="#" class="notebook-card"><h3>The Perfect 3 Days in Kyoto</h3><p>Temples, tea ceremonies, and hidden gardens for first-timers.</p><div class="tags">Japan &middot; Culture &middot; 3 Days</div></a>
+            <a href="#" class="notebook-card"><h3>Hiking the W Trek</h3><p>Gear, timing, refugios — the honest truth about Patagonia.</p><div class="tags">Chile &middot; Hiking &middot; Adventure</div></a>
+            <a href="#" class="notebook-card"><h3>NYC Marathon as a Tourist</h3><p>Balancing race prep with enjoying the city.</p><div class="tags">NYC &middot; Running &middot; Weekend</div></a>
+        </div>
+
+        <!-- Places Traveled -->
+        <div class="places-section">
+            <div class="section-label">Places Traveled</div>
+            <div class="places-wrap">
+                <div class="places-stats">
+                    <div class="p-big"><span class="p-num">41</span><span class="p-lbl">countries<br>of 195</span></div>
+                    <div class="p-bar"><div class="p-fill"></div></div>
+                    <div class="p-pct"><strong>21%</strong> of the world explored</div>
+                    <div class="p-links">
+                        <a href="#">&#9654; My Continents</a>
+                        <a href="#">&#9654; My Countries</a>
+                        <a href="#">&#9654; My Cities</a>
+                    </div>
+                    <div class="cont-label">Breakdown</div>
+                    <div class="cont-grid">
+                        <span class="cont-row"><strong>Africa:</strong> <span class="cont-v">5</span>/54</span>
+                        <span class="cont-row"><strong>N. America:</strong> <span class="cont-v">3</span>/23</span>
+                        <span class="cont-row"><strong>Asia:</strong> <span class="cont-v">8</span>/48</span>
+                        <span class="cont-row"><strong>Oceania:</strong> <span class="cont-v">1</span>/14</span>
+                        <span class="cont-row"><strong>Europe:</strong> <span class="cont-v">20</span>/46</span>
+                        <span class="cont-row"><strong>S. America:</strong> <span class="cont-v">4</span>/12</span>
+                        <span class="cont-row"><strong>Antarctica:</strong> <span class="cont-v">0</span>/2</span>
+                    </div>
+                    <a href="#" class="add-link">+ Add Places</a>
+                </div>
+                <div class="places-map">
+                    <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                        <rect class="water" x="0" y="0" width="1000" height="500"/>
+                        <path class="land visited" d="M100,30 L220,20 L270,50 L280,100 L270,140 L250,170 L200,180 L160,170 L130,140 L110,100 L95,60Z"/>
+                        <path class="land visited" d="M140,170 L190,168 L200,200 L185,225 L160,220 L135,200Z"/>
+                        <path class="land" d="M210,190 L240,185 L245,200 L225,205Z"/>
+                        <path class="land visited" d="M190,235 L250,225 L290,260 L300,320 L285,380 L260,410 L230,400 L210,360 L200,300 L185,260Z"/>
+                        <path class="land" d="M280,10 L320,5 L345,30 L335,60 L310,65 L280,45Z"/>
+                        <path class="land visited" d="M370,50 L392,44 L400,58 L388,65 L372,60Z"/>
+                        <path class="land visited" d="M395,80 L412,74 L418,98 L408,108 L395,100Z"/>
+                        <path class="land visited" d="M430,28 L450,20 L465,40 L468,75 L458,88 L440,80 L432,55Z"/>
+                        <path class="land visited" d="M400,100 L440,92 L455,115 L450,145 L430,155 L405,150 L395,130Z"/>
+                        <path class="land visited" d="M385,148 L415,142 L422,162 L412,175 L388,172Z"/>
+                        <path class="land visited" d="M445,80 L490,72 L510,95 L505,130 L480,138 L455,130 L448,105Z"/>
+                        <path class="land visited" d="M435,130 L465,125 L475,150 L468,172 L450,175 L435,160Z"/>
+                        <path class="land" d="M490,15 L650,5 L750,20 L780,50 L770,72 L700,62 L600,58 L530,65 L500,50Z"/>
+                        <path class="land visited" d="M480,135 L520,128 L540,140 L535,155 L510,160 L485,152Z"/>
+                        <path class="land visited" d="M375,178 L460,168 L480,185 L475,210 L440,220 L390,215 L372,198Z"/>
+                        <path class="land" d="M370,220 L420,225 L430,260 L415,285 L385,280 L368,255Z"/>
+                        <path class="land visited" d="M440,225 L500,218 L515,250 L510,295 L490,310 L460,305 L440,275Z"/>
+                        <path class="land visited" d="M430,310 L490,305 L510,335 L505,375 L480,390 L450,385 L430,355Z"/>
+                        <path class="land visited" d="M510,155 L555,148 L570,172 L565,205 L540,215 L515,210 L505,185Z"/>
+                        <path class="land" d="M560,85 L620,78 L645,100 L638,128 L610,135 L575,128 L560,108Z"/>
+                        <path class="land visited" d="M590,155 L630,145 L650,175 L645,215 L625,240 L600,235 L585,205 L580,178Z"/>
+                        <path class="land visited" d="M635,65 L720,55 L758,82 L750,120 L720,138 L685,140 L660,128 L645,100Z"/>
+                        <path class="land visited" d="M770,80 L785,72 L790,100 L782,118 L770,112Z"/>
+                        <path class="land visited" d="M752,95 L765,90 L768,110 L758,115Z"/>
+                        <path class="land visited" d="M660,155 L700,148 L718,175 L712,210 L690,218 L665,212 L655,185Z"/>
+                        <path class="land visited" d="M670,225 L730,218 L760,235 L755,255 L720,260 L680,255 L668,242Z"/>
+                        <path class="land" d="M720,310 L790,298 L835,320 L840,360 L815,385 L775,390 L740,378 L720,348Z"/>
+                        <path class="land" d="M855,370 L865,365 L870,390 L862,400Z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bucket List — trail waypoints -->
+        <div class="waypoint-section">
+            <div class="section-label">Where to Next <a href="#">Edit &rarr;</a></div>
+            <div class="waypoint-grid">
+                <a href="#" class="waypoint"><div class="wp-emoji">&#127774;</div><h4>Morocco</h4><span>Marrakech, Sahara</span></a>
+                <a href="#" class="waypoint"><div class="wp-emoji">&#127752;</div><h4>New Zealand</h4><span>Milford Sound</span></a>
+                <a href="#" class="waypoint"><div class="wp-emoji">&#127843;</div><h4>Oaxaca</h4><span>Food, mezcal</span></a>
+                <a href="#" class="waypoint"><div class="wp-emoji">&#127966;</div><h4>Norway</h4><span>Lofoten, lights</span></a>
+            </div>
+        </div>
+
+        <!-- Trending -->
+        <div class="trend-section">
+            <div class="section-label">See What's Trending</div>
+            <div class="trend-list">
+                <a href="#" class="trend-item"><span class="trend-rank">01</span><div><h4>Lisbon, Portugal</h4><span>342 itineraries</span></div></a>
+                <a href="#" class="trend-item"><span class="trend-rank">02</span><div><h4>Seoul, South Korea</h4><span>287 itineraries</span></div></a>
+                <a href="#" class="trend-item"><span class="trend-rank">03</span><div><h4>Lofoten, Norway</h4><span>156 itineraries</span></div></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-bar">
+        <span><strong>AI Trip Planner</strong> — Tell us where and when. Full itinerary in seconds.</span>
+        <a href="#">Try Free</a>
+    </div>
+
+    <footer>&copy; 2026 Tripscape</footer>
+</body>
+</html>
