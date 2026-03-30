@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 01: Clean Minimal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --text: #1a1a1a;
+            --text-light: #6b6b6b;
+            --bg: #ffffff;
+            --accent: #1a1a1a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: var(--bg);
+        }
+
+        /* Back link */
+        .back {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-decoration: none;
+            z-index: 100;
+            transition: color 0.2s;
+        }
+
+        .back:hover {
+            color: var(--text);
+        }
+
+        /* Nav */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-cta {
+            padding: 0.6rem 1.5rem;
+            background: var(--accent);
+            color: #fff !important;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .nav-cta:hover {
+            opacity: 0.85;
+        }
+
+        /* Hero */
+        .hero {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 8rem 3rem 6rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 520px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 0.85rem 2rem;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.85;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 0.85rem 2rem;
+            border: 1.5px solid #d0d0d0;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: border-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text);
+        }
+
+        /* Features */
+        .features {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 3rem 6rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Social proof */
+        .social-proof {
+            text-align: center;
+            padding: 4rem 3rem;
+            border-top: 1px solid #eee;
+        }
+
+        .social-proof p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 6rem 3rem;
+        }
+
+        .cta h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 3rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            border-top: 1px solid #eee;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .stat-row {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            nav {
+                padding: 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 5rem 1.5rem 4rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back">&larr; All iterations</a>
+
+    <nav>
+        <div class="logo">Tripscape</div>
+        <ul class="nav-links">
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Guides</a></li>
+            <li><a href="#">Explore</a></li>
+            <li><a href="#" class="nav-cta">Get Started</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1>Plan your next adventure, all in one place</h1>
+        <p>Create detailed travel itineraries, discover community-written guides, and see how much of the world you've explored.</p>
+        <div class="hero-buttons">
+            <a href="#" class="btn-primary">Start Planning</a>
+            <a href="#" class="btn-secondary">Browse Guides</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature">
+            <div class="feature-icon">&#9776;</div>
+            <h3>Build Itineraries</h3>
+            <p>Organize your trips day by day with places, notes, and maps. Share them with travel companions or keep them private.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">&#9998;</div>
+            <h3>Write Travel Guides</h3>
+            <p>Share your local knowledge and travel tips. Create guides that help others experience destinations like you did.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">&#127758;</div>
+            <h3>Track Your World</h3>
+            <p>See everywhere you've been on an interactive map. Set goals, track countries, and watch your travel footprint grow.</p>
+        </div>
+    </section>
+
+    <section class="social-proof">
+        <p>Trusted by travelers worldwide</p>
+        <div class="stat-row">
+            <div class="stat">
+                <span class="stat-number">12K+</span>
+                <span class="stat-label">Itineraries created</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">3.2K</span>
+                <span class="stat-label">Travel guides</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">195</span>
+                <span class="stat-label">Countries covered</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Ready to plan your next trip?</h2>
+        <p>Join thousands of travelers building better itineraries.</p>
+        <a href="#" class="btn-primary">Get Started — It's Free</a>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Tripscape</p>
+    </footer>
+</body>
+</html>
