@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 13: Ping Pong</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: #1A1A1A;
+            background: #FFFEF8;
+            min-height: 100vh;
+        }
+
+        .back-link {
+            position: fixed; bottom: 1rem; right: 1rem; font-size: 0.7rem;
+            color: #888; text-decoration: none; background: #fff; padding: 0.3rem 0.6rem;
+            border: 2px solid #1A1A1A; z-index: 200;
+        }
+
+        /* ======== BOLD HEADER — manga panel style ======== */
+        .header-bar {
+            background: #1A1A1A;
+            color: #FFFEF8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-decoration: none;
+            color: #FFFEF8;
+            text-transform: uppercase;
+        }
+
+        /* Rough underline accent */
+        .logo span {
+            color: #FF4444;
+        }
+
+        .nav-row {
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
+        }
+
+        .nav-row a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.15s;
+        }
+        .nav-row a:hover { color: #fff; }
+        .nav-row a.active { color: #FF4444; }
+        .nav-row .ai-pill {
+            border: 1.5px solid #FFD700;
+            color: #FFD700;
+            padding: 0.15rem 0.45rem;
+            font-size: 0.6rem;
+        }
+        .nav-row .ai-pill:hover { background: #FFD700; color: #1A1A1A; }
+
+        .avatar {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: #FF4444; color: #fff; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 0.55rem; font-weight: 800;
+        }
+
+        /* ======== HERO — raw, energetic ======== */
+        .hero {
+            border-bottom: 4px solid #1A1A1A;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+            /* Speed lines effect */
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0px,
+                    transparent 48px,
+                    rgba(26,26,26,0.03) 48px,
+                    rgba(26,26,26,0.03) 50px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0px,
+                    transparent 48px,
+                    rgba(26,26,26,0.02) 48px,
+                    rgba(26,26,26,0.02) 50px
+                );
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero h1 .highlight {
+            color: #FF4444;
+            display: inline;
+        }
+
+        .hero p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            max-width: 420px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-harsh {
+            padding: 0.65rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            border: 3px solid #1A1A1A;
+            transition: all 0.15s;
+        }
+
+        .btn-fill { background: #FF4444; color: #fff; border-color: #FF4444; }
+        .btn-fill:hover { background: #CC3333; border-color: #CC3333; }
+        .btn-ghost { background: transparent; color: #1A1A1A; }
+        .btn-ghost:hover { background: #1A1A1A; color: #FFFEF8; }
+
+        .btn-ai-hero {
+            padding: 0.6rem 1.2rem; font-size: 0.68rem;
+            border: 2px dashed #FFD700; color: #B8860B; background: transparent;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            text-decoration: none;
+        }
+        .btn-ai-hero:hover { background: #FFD700; color: #1A1A1A; }
+
+        /* Side text — vertical */
+        .hero-side {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            font-size: 0.55rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #CCC;
+            transform-origin: center;
+        }
+
+        /* ======== PANELS — manga grid layout ======== */
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 4px solid #1A1A1A;
+        }
+
+        .panel {
+            padding: 1.5rem 2rem;
+            border-right: 4px solid #1A1A1A;
+        }
+        .panel:last-child { border-right: none; }
+
+        .panel-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #FF4444;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid #1A1A1A;
+        }
+
+        .panel-label span {
+            float: right; color: #999; font-weight: 600; letter-spacing: 1px;
+            cursor: pointer; font-size: 0.55rem;
+        }
+
+        /* Itineraries — bold list */
+        .itin-row {
+            display: flex; gap: 0.7rem; align-items: center;
+            padding: 0.7rem 0; border-bottom: 1px solid #EEE;
+            text-decoration: none; color: inherit; transition: background 0.1s;
+        }
+        .itin-row:hover { background: #F8F8F0; }
+        .itin-row:last-child { border-bottom: none; }
+
+        .itin-emoji { font-size: 1.5rem; flex-shrink: 0; }
+
+        .itin-text h3 { font-size: 0.88rem; font-weight: 800; }
+        .itin-text .sub { font-size: 0.62rem; color: #999; }
+
+        .itin-days {
+            margin-left: auto;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #DDD;
+            line-height: 1;
+        }
+
+        /* Guides — stacked */
+        .guide-row {
+            padding: 0.7rem 0; border-bottom: 1px solid #EEE;
+            text-decoration: none; color: inherit; display: block;
+            transition: background 0.1s;
+        }
+        .guide-row:hover { background: #F8F8F0; }
+        .guide-row:last-child { border-bottom: none; }
+
+        .guide-row h3 { font-size: 0.85rem; font-weight: 800; margin-bottom: 0.1rem; }
+        .guide-row p { font-size: 0.65rem; color: #888; line-height: 1.4; }
+        .guide-row .tag-line { font-size: 0.52rem; color: #FF4444; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.2rem; }
+
+        /* ======== PLACES TRAVELED — full width, compact ======== */
+        .places {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            border-bottom: 4px solid #1A1A1A;
+        }
+
+        .places-stats {
+            padding: 1.5rem 2rem;
+            border-right: 4px solid #1A1A1A;
+        }
+
+        .places-stats .panel-label { margin-bottom: 0.75rem; }
+
+        .big-stat {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+            margin-bottom: 0.1rem;
+        }
+
+        .big-stat .num {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #FF4444;
+            line-height: 1;
+        }
+
+        .big-stat .label {
+            font-size: 0.7rem;
+            color: #999;
+        }
+
+        .pct-bar {
+            height: 6px;
+            background: #EEE;
+            margin: 0.5rem 0 0.75rem;
+        }
+
+        .pct-fill {
+            height: 100%;
+            width: 21%;
+            background: #FF4444;
+        }
+
+        .pct-text {
+            font-size: 0.65rem;
+            color: #999;
+            margin-bottom: 0.75rem;
+        }
+
+        .pct-text strong { color: #FF4444; }
+
+        .stat-links {
+            display: flex; flex-direction: column; gap: 0.2rem;
+            margin-bottom: 0.75rem; padding-bottom: 0.75rem;
+            border-bottom: 1px solid #EEE;
+        }
+        .stat-links a { font-size: 0.65rem; color: #FF4444; text-decoration: none; }
+        .stat-links a:hover { text-decoration: underline; }
+
+        .cont-label { font-size: 0.52rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 0.25rem; }
+        .cont-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.08rem; font-size: 0.65rem; }
+        .cont-row { color: #999; }
+        .cont-row strong { color: #1A1A1A; }
+        .cont-v { color: #FF4444; font-weight: 800; }
+
+        .add-link {
+            display: inline-block; margin-top: 0.6rem; font-size: 0.6rem;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            color: #FF4444; text-decoration: none; border-bottom: 2px solid #FF4444;
+        }
+
+        /* Map — compact */
+        .places-map {
+            padding: 1rem;
+            background: #F4F0E4;
+            display: flex;
+            align-items: center;
+        }
+
+        .places-map svg { width: 100%; max-height: 260px; }
+        .places-map svg .water { fill: #EDE8D8; }
+        .places-map svg .land { fill: #D8D0C0; stroke: #C8C0B0; stroke-width: 0.5; }
+        .places-map svg .visited { fill: #FF4444; stroke: #CC3333; }
+        .places-map svg .visited:hover { fill: #1A1A1A; }
+
+        /* ======== BUCKET + TRENDING — side by side ======== */
+        .bottom-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 4px solid #1A1A1A;
+        }
+
+        .bottom-panel {
+            padding: 1.5rem 2rem;
+        }
+        .bottom-panel:first-child { border-right: 4px solid #1A1A1A; }
+
+        /* Bucket list */
+        .bucket-row {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.5rem 0; border-bottom: 1px solid #EEE;
+            text-decoration: none; color: inherit;
+        }
+        .bucket-row:hover { background: #F8F8F0; }
+        .bucket-row:last-child { border-bottom: none; }
+
+        .bucket-rank {
+            font-size: 1.1rem; font-weight: 900; color: #DDD; width: 24px;
+        }
+
+        .bucket-row h4 { font-size: 0.78rem; font-weight: 800; }
+        .bucket-row span { font-size: 0.58rem; color: #999; }
+
+        /* Trending */
+        .trend-row {
+            display: flex; align-items: center; gap: 0.7rem;
+            padding: 0.6rem 0; border-bottom: 1px solid #EEE;
+            text-decoration: none; color: inherit;
+        }
+        .trend-row:hover { background: #F8F8F0; }
+        .trend-row:last-child { border-bottom: none; }
+
+        .trend-rank {
+            font-size: 1.6rem; font-weight: 900; color: #EEE; width: 32px; line-height: 1;
+        }
+
+        .trend-row h4 { font-size: 0.78rem; font-weight: 800; }
+        .trend-row span { font-size: 0.58rem; color: #999; }
+
+        .trend-count {
+            margin-left: auto;
+            font-size: 0.55rem;
+            color: #CCC;
+            font-weight: 700;
+        }
+
+        /* ======== AI BAR ======== */
+        .ai-bar {
+            background: #1A1A1A; color: #999; padding: 0.6rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.65rem;
+        }
+        .ai-bar strong { color: #FFD700; }
+        .ai-bar a {
+            color: #FFD700; text-decoration: none; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; font-size: 0.6rem;
+            border: 1px solid #FFD700; padding: 0.2rem 0.5rem;
+        }
+        .ai-bar a:hover { background: #FFD700; color: #1A1A1A; }
+
+        /* ======== FOOTER ======== */
+        footer {
+            background: #1A1A1A; color: #555; text-align: center;
+            padding: 1.25rem; font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        /* ======== RESPONSIVE ======== */
+        @media (max-width: 900px) {
+            .panels, .bottom-panels { grid-template-columns: 1fr; }
+            .panel { border-right: none; border-bottom: 4px solid #1A1A1A; }
+            .panel:last-child { border-bottom: none; }
+            .bottom-panel:first-child { border-right: none; border-bottom: 4px solid #1A1A1A; }
+            .places { grid-template-columns: 1fr; }
+            .places-stats { border-right: none; border-bottom: 4px solid #1A1A1A; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-side { display: none; }
+        }
+        @media (max-width: 600px) {
+            .header-bar { padding: 0.5rem 1rem; }
+            .hero { padding: 2rem 1rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero-btns { flex-direction: column; }
+            .panel, .places-stats, .places-map, .bottom-panel { padding: 1.25rem 1rem; }
+            .ai-bar { flex-direction: column; gap: 0.4rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; Back</a>
+
+    <!-- Header -->
+    <div class="header-bar">
+        <a href="#" class="logo">Trip<span>scape</span></a>
+        <div class="nav-row">
+            <a href="#" class="active">Home</a>
+            <a href="#">Trips</a>
+            <a href="#">Guides</a>
+            <a href="#">Discover</a>
+            <a href="#" class="ai-pill">AI</a>
+            <div class="avatar">HZ</div>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Go<br><span class="highlight">somewhere</span><br>new.</h1>
+            <p>Build itineraries. Write guides. See how far you've come. The world won't explore itself.</p>
+            <div class="hero-btns">
+                <a href="#" class="btn-harsh btn-fill">+ New Itinerary</a>
+                <a href="#" class="btn-harsh btn-ghost">+ Write Guide</a>
+                <a href="#" class="btn-ai-hero">Pro — AI Planner</a>
+            </div>
+        </div>
+        <div class="hero-side">Tripscape &middot; 2025</div>
+    </section>
+
+    <!-- Two-panel manga grid -->
+    <div class="panels">
+        <div class="panel">
+            <div class="panel-label">My Itineraries <span>View All &rarr;</span></div>
+            <a href="#" class="itin-row">
+                <span class="itin-emoji">&#127983;</span>
+                <div class="itin-text"><h3>Tokyo &amp; Kyoto</h3><span class="sub">14 stops &middot; Apr 2025</span></div>
+                <span class="itin-days">10</span>
+            </a>
+            <a href="#" class="itin-row">
+                <span class="itin-emoji">&#9968;</span>
+                <div class="itin-text"><h3>Patagonia Trek</h3><span class="sub">8 stops &middot; Jan 2025</span></div>
+                <span class="itin-days">14</span>
+            </a>
+            <a href="#" class="itin-row">
+                <span class="itin-emoji">&#127956;</span>
+                <div class="itin-text"><h3>Iceland Ring Road</h3><span class="sub">22 stops &middot; Aug 2024</span></div>
+                <span class="itin-days">8</span>
+            </a>
+            <a href="#" class="itin-row">
+                <span class="itin-emoji">&#127939;</span>
+                <div class="itin-text"><h3>Berlin Marathon</h3><span class="sub">9 stops &middot; Sep 2025</span></div>
+                <span class="itin-days">5</span>
+            </a>
+        </div>
+        <div class="panel">
+            <div class="panel-label">My Guides <span>View All &rarr;</span></div>
+            <a href="#" class="guide-row">
+                <h3>The Perfect 3 Days in Kyoto</h3>
+                <p>Temples, tea ceremonies, and hidden gardens — a curated guide for first-timers.</p>
+                <div class="tag-line">Japan &middot; Culture &middot; 3 Days</div>
+            </a>
+            <a href="#" class="guide-row">
+                <h3>Hiking the W Trek</h3>
+                <p>Gear, timing, refugios, and the honest truth about Patagonia's famous route.</p>
+                <div class="tag-line">Chile &middot; Hiking &middot; Adventure</div>
+            </a>
+            <a href="#" class="guide-row">
+                <h3>NYC Marathon as a Tourist</h3>
+                <p>How to balance race prep with actually enjoying the city.</p>
+                <div class="tag-line">NYC &middot; Running &middot; Weekend</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Places Traveled -->
+    <div class="places">
+        <div class="places-stats">
+            <div class="panel-label">Places Traveled</div>
+            <div class="big-stat">
+                <span class="num">41</span>
+                <span class="label">countries<br>of 195</span>
+            </div>
+            <div class="pct-bar"><div class="pct-fill"></div></div>
+            <div class="pct-text"><strong>21%</strong> of the world explored</div>
+
+            <div class="stat-links">
+                <a href="#">&#9654; My Continents</a>
+                <a href="#">&#9654; My Countries</a>
+                <a href="#">&#9654; My Cities</a>
+            </div>
+
+            <div class="cont-label">Breakdown</div>
+            <div class="cont-grid">
+                <span class="cont-row"><strong>Africa:</strong> <span class="cont-v">5</span>/54</span>
+                <span class="cont-row"><strong>N. America:</strong> <span class="cont-v">3</span>/23</span>
+                <span class="cont-row"><strong>Asia:</strong> <span class="cont-v">8</span>/48</span>
+                <span class="cont-row"><strong>Oceania:</strong> <span class="cont-v">1</span>/14</span>
+                <span class="cont-row"><strong>Europe:</strong> <span class="cont-v">20</span>/46</span>
+                <span class="cont-row"><strong>S. America:</strong> <span class="cont-v">4</span>/12</span>
+                <span class="cont-row"><strong>Antarctica:</strong> <span class="cont-v">0</span>/2</span>
+            </div>
+            <a href="#" class="add-link">+ Add Places</a>
+        </div>
+        <div class="places-map">
+            <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                <rect class="water" x="0" y="0" width="1000" height="500"/>
+                <path class="land visited" d="M100,30 L220,20 L270,50 L280,100 L270,140 L250,170 L200,180 L160,170 L130,140 L110,100 L95,60Z"/>
+                <path class="land visited" d="M140,170 L190,168 L200,200 L185,225 L160,220 L135,200Z"/>
+                <path class="land" d="M210,190 L240,185 L245,200 L225,205Z"/>
+                <path class="land visited" d="M190,235 L250,225 L290,260 L300,320 L285,380 L260,410 L230,400 L210,360 L200,300 L185,260Z"/>
+                <path class="land" d="M280,10 L320,5 L345,30 L335,60 L310,65 L280,45Z"/>
+                <path class="land visited" d="M370,50 L392,44 L400,58 L388,65 L372,60Z"/>
+                <path class="land visited" d="M395,80 L412,74 L418,98 L408,108 L395,100Z"/>
+                <path class="land visited" d="M430,28 L450,20 L465,40 L468,75 L458,88 L440,80 L432,55Z"/>
+                <path class="land visited" d="M400,100 L440,92 L455,115 L450,145 L430,155 L405,150 L395,130Z"/>
+                <path class="land visited" d="M385,148 L415,142 L422,162 L412,175 L388,172Z"/>
+                <path class="land visited" d="M445,80 L490,72 L510,95 L505,130 L480,138 L455,130 L448,105Z"/>
+                <path class="land visited" d="M435,130 L465,125 L475,150 L468,172 L450,175 L435,160Z"/>
+                <path class="land" d="M490,15 L650,5 L750,20 L780,50 L770,72 L700,62 L600,58 L530,65 L500,50Z"/>
+                <path class="land visited" d="M480,135 L520,128 L540,140 L535,155 L510,160 L485,152Z"/>
+                <path class="land visited" d="M375,178 L460,168 L480,185 L475,210 L440,220 L390,215 L372,198Z"/>
+                <path class="land" d="M370,220 L420,225 L430,260 L415,285 L385,280 L368,255Z"/>
+                <path class="land visited" d="M440,225 L500,218 L515,250 L510,295 L490,310 L460,305 L440,275Z"/>
+                <path class="land visited" d="M430,310 L490,305 L510,335 L505,375 L480,390 L450,385 L430,355Z"/>
+                <path class="land visited" d="M510,155 L555,148 L570,172 L565,205 L540,215 L515,210 L505,185Z"/>
+                <path class="land" d="M560,85 L620,78 L645,100 L638,128 L610,135 L575,128 L560,108Z"/>
+                <path class="land visited" d="M590,155 L630,145 L650,175 L645,215 L625,240 L600,235 L585,205 L580,178Z"/>
+                <path class="land visited" d="M635,65 L720,55 L758,82 L750,120 L720,138 L685,140 L660,128 L645,100Z"/>
+                <path class="land visited" d="M770,80 L785,72 L790,100 L782,118 L770,112Z"/>
+                <path class="land visited" d="M752,95 L765,90 L768,110 L758,115Z"/>
+                <path class="land visited" d="M660,155 L700,148 L718,175 L712,210 L690,218 L665,212 L655,185Z"/>
+                <path class="land visited" d="M670,225 L730,218 L760,235 L755,255 L720,260 L680,255 L668,242Z"/>
+                <path class="land" d="M720,310 L790,298 L835,320 L840,360 L815,385 L775,390 L740,378 L720,348Z"/>
+                <path class="land" d="M855,370 L865,365 L870,390 L862,400Z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Bucket + Trending side by side -->
+    <div class="bottom-panels">
+        <div class="bottom-panel">
+            <div class="panel-label">Where to Next <span>Edit &rarr;</span></div>
+            <a href="#" class="bucket-row"><span class="bucket-rank">01</span><div><h4>Morocco</h4><span>Marrakech, Sahara, Fez</span></div></a>
+            <a href="#" class="bucket-row"><span class="bucket-rank">02</span><div><h4>New Zealand</h4><span>Milford Sound, Queenstown</span></div></a>
+            <a href="#" class="bucket-row"><span class="bucket-rank">03</span><div><h4>Oaxaca, Mexico</h4><span>Food, mezcal, Monte Alban</span></div></a>
+            <a href="#" class="bucket-row"><span class="bucket-rank">04</span><div><h4>Norway Fjords</h4><span>Lofoten, Northern Lights</span></div></a>
+        </div>
+        <div class="bottom-panel">
+            <div class="panel-label">See What's Trending</div>
+            <a href="#" class="trend-row"><span class="trend-rank">01</span><div class="trending-info"><h4>Lisbon, Portugal</h4><span>342 itineraries</span></div><span class="trend-count">&#9650; 12%</span></a>
+            <a href="#" class="trend-row"><span class="trend-rank">02</span><div class="trending-info"><h4>Seoul, South Korea</h4><span>287 itineraries</span></div><span class="trend-count">&#9650; 8%</span></a>
+            <a href="#" class="trend-row"><span class="trend-rank">03</span><div class="trending-info"><h4>Lofoten, Norway</h4><span>156 itineraries</span></div><span class="trend-count">&#9650; 24%</span></a>
+        </div>
+    </div>
+
+    <!-- AI Bar -->
+    <div class="ai-bar">
+        <span><strong>AI Trip Planner</strong> — Tell us where and when. Full itinerary in seconds.</span>
+        <a href="#">Try Free</a>
+    </div>
+
+    <footer>&copy; 2026 Tripscape</footer>
+</body>
+</html>
