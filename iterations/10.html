@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 10: Studio Ghibli</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --sky-top: #8EC8D8;
+            --sky-bottom: #D4EAE1;
+            --grass: #5A9E6F;
+            --grass-dark: #3D7A52;
+            --cloud: #FFFFFF;
+            --warm: #F5E6C8;
+            --wood: #8B6F47;
+            --wood-light: #A68B5B;
+            --brown: #5C4033;
+            --red: #C0392B;
+            --red-light: #E74C3C;
+            --text: #3B3226;
+            --text-light: #7A6E5E;
+            --border: #D5CBB8;
+            --paper: #FFF9EE;
+            --tape-yellow: rgba(255, 230, 140, 0.75);
+            --tape-green: rgba(180, 220, 180, 0.6);
+            --tape-pink: rgba(255, 185, 185, 0.55);
+            --gold: #C49B3C;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: var(--text);
+            /* Ghibli sky gradient — full page */
+            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 35%, var(--grass) 35%, #4A8F60 50%, var(--warm) 50%, var(--warm) 100%);
+            background-attachment: fixed;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .back-link {
+            position: fixed; bottom: 1.5rem; left: 1.5rem; font-family: -apple-system, sans-serif;
+            font-size: 0.8rem; color: var(--text-light); text-decoration: none;
+            background: var(--paper); padding: 0.4rem 0.8rem; border-radius: 12px;
+            border: 1px solid var(--border); z-index: 200;
+        }
+        .back-link:hover { color: var(--red); }
+
+        /* ---- Nav — like a wooden sign ---- */
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 2rem; background: rgba(92, 64, 51, 0.9);
+            backdrop-filter: blur(5px); color: var(--warm);
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 3px solid var(--wood);
+        }
+        .logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--warm); }
+        .logo-icon { width: 34px; height: 34px; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; font-style: italic; letter-spacing: 0.5px; }
+        .nav-links { display: flex; list-style: none; gap: 1.5rem; align-items: center; }
+        .nav-links a { text-decoration: none; color: rgba(245,230,200,0.6); font-family: -apple-system, sans-serif; font-size: 0.78rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--warm); }
+        .nav-links a.active { color: var(--warm); font-weight: 700; }
+        .nav-ai { font-size: 0.65rem !important; font-weight: 700 !important; padding: 0.25rem 0.55rem; border: 1.5px solid var(--gold); border-radius: 10px; color: var(--gold) !important; }
+        .nav-ai:hover { background: var(--gold); color: var(--brown) !important; }
+        .nav-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--grass); color: #fff; display: flex; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; font-size: 0.6rem; font-weight: 700; }
+
+        /* ---- Main content — bulletin board style ---- */
+        .board {
+            max-width: 100%;
+            margin: 0;
+            padding: 2rem 3rem 3rem;
+            background: var(--warm);
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(139,111,71,0.04) 30px, rgba(139,111,71,0.04) 31px),
+                repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(139,111,71,0.04) 30px, rgba(139,111,71,0.04) 31px);
+            min-height: 100vh;
+            border-top: 4px solid var(--wood);
+        }
+
+        /* ---- Welcome ---- */
+        .welcome { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; }
+        .welcome-text h1 { font-size: 2rem; font-weight: 700; color: var(--brown); }
+        .welcome-text h1 span { color: var(--grass-dark); }
+        .welcome-text p { font-size: 0.88rem; color: var(--text-light); font-style: italic; }
+
+        .create-group { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.6rem 1.1rem; border-radius: 20px; font-family: -apple-system, sans-serif; font-size: 0.78rem; font-weight: 700; text-decoration: none; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-green { background: var(--grass); color: #fff; }
+        .btn-green:hover { background: var(--grass-dark); }
+        .btn-brown { background: transparent; border: 1.5px solid var(--wood); color: var(--wood); }
+        .btn-brown:hover { background: var(--wood); color: var(--warm); }
+        .btn-ai { border: 1.5px dashed var(--gold); color: var(--gold); background: transparent; font-size: 0.72rem; padding: 0.55rem 0.9rem; border-radius: 20px; }
+        .btn-ai:hover { background: var(--gold); color: #fff; }
+        .btn-ai .pro-tag { font-size: 0.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: var(--gold); color: #fff; padding: 0.08rem 0.25rem; border-radius: 2px; margin-right: 0.15rem; }
+        .btn-ai:hover .pro-tag { background: #fff; color: var(--gold); }
+
+        /* Search */
+        .search-bar { display: flex; background: var(--paper); border: 2px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 1.5rem; }
+        .search-bar input { flex: 1; padding: 0.6rem 1rem; border: none; font-family: Georgia, serif; font-size: 0.85rem; background: transparent; color: var(--text); outline: none; }
+        .search-bar input::placeholder { color: var(--text-light); font-style: italic; }
+        .search-btn { padding: 0.6rem 1.1rem; background: var(--grass); border: none; color: #fff; font-family: -apple-system, sans-serif; font-size: 0.72rem; font-weight: 700; cursor: pointer; border-radius: 0 18px 18px 0; }
+
+        /* ---- Section Headers ---- */
+        .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.85rem; }
+        .section-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--brown); }
+        .section-header a { font-family: -apple-system, sans-serif; font-size: 0.7rem; font-weight: 600; color: var(--grass-dark); text-decoration: none; }
+        .section-header a:hover { text-decoration: underline; }
+
+        /* ---- Upcoming — pinned note ---- */
+        .upcoming { margin-bottom: 1.5rem; }
+        .upcoming-card {
+            background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
+            padding: 0.85rem 1.15rem; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.06); position: relative;
+        }
+        .upcoming-card::before { content: ''; position: absolute; top: -6px; left: 50%; margin-left: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .upcoming-left { display: flex; align-items: center; gap: 0.85rem; }
+        .countdown { text-align: center; min-width: 50px; }
+        .countdown-num { font-size: 1.7rem; font-weight: 700; color: var(--red); line-height: 1; font-family: -apple-system, sans-serif; }
+        .countdown-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); font-family: -apple-system, sans-serif; }
+        .upcoming-info h3 { font-size: 0.92rem; font-weight: 700; }
+        .upcoming-info .meta { font-family: -apple-system, sans-serif; font-size: 0.7rem; color: var(--text-light); }
+        .upcoming-link { font-family: -apple-system, sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--grass-dark); text-decoration: none; }
+        .upcoming-link:hover { text-decoration: underline; }
+
+        /* ---- Polaroid Itineraries ---- */
+        .itineraries { margin-bottom: 2rem; }
+        .polaroid-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+        .polaroid {
+            background: var(--paper); padding: 0.5rem 0.5rem 0.8rem; border-radius: 2px;
+            box-shadow: 2px 3px 10px rgba(0,0,0,0.1); text-decoration: none; color: inherit;
+            display: block; transition: transform 0.2s; position: relative;
+        }
+        .polaroid:nth-child(1) { transform: rotate(-1.5deg); }
+        .polaroid:nth-child(2) { transform: rotate(1deg); }
+        .polaroid:nth-child(3) { transform: rotate(-0.7deg); }
+        .polaroid:nth-child(4) { transform: rotate(1.2deg); }
+        .polaroid:hover { transform: rotate(0deg) translateY(-4px); box-shadow: 3px 6px 18px rgba(0,0,0,0.14); }
+
+        .polaroid::before { content: ''; position: absolute; top: -6px; width: 48px; height: 16px; z-index: 1; }
+        .polaroid:nth-child(1)::before { left: 12px; background: var(--tape-green); transform: rotate(3deg); }
+        .polaroid:nth-child(2)::before { right: 10px; background: var(--tape-yellow); transform: rotate(-2deg); }
+        .polaroid:nth-child(3)::before { left: 15px; background: var(--tape-pink); transform: rotate(1deg); }
+        .polaroid:nth-child(4)::before { right: 14px; background: var(--tape-green); transform: rotate(-3deg); }
+
+        .polaroid-photo {
+            height: 130px; border-radius: 1px; margin-bottom: 0.55rem;
+            display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
+        }
+        /* Ghibli-esque soft gradients */
+        .photo-tokyo { background: linear-gradient(135deg, #FADADD, #F4A7B9 40%, #D4B0D0 70%, #A8B8D8); }
+        .photo-patagonia { background: linear-gradient(135deg, #AED9C8, #78B89A 40%, #5A8F6F 65%, #4A7A5A); }
+        .photo-iceland { background: linear-gradient(135deg, #B8D8E8, #8EC8D8 40%, #6AABB8 65%, #4A8A98); }
+        .photo-berlin { background: linear-gradient(135deg, #E8D8B8, #D4C098 40%, #B8A078 65%, #8A7858); }
+
+        .polaroid-caption { padding: 0 0.2rem; }
+        .polaroid-caption h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.05rem; }
+        .polaroid-caption .meta { font-family: -apple-system, sans-serif; font-size: 0.68rem; color: var(--text-light); }
+
+        /* ---- Places Traveled ---- */
+        .places { margin-bottom: 2rem; }
+        .places-card { background: var(--paper); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; box-shadow: 2px 2px 8px rgba(0,0,0,0.06); position: relative; }
+        .places-card::before { content: ''; position: absolute; top: -6px; right: 35px; width: 55px; height: 17px; background: var(--tape-yellow); transform: rotate(2deg); z-index: 1; }
+        .places-card::after { content: ''; position: absolute; top: -6px; left: 30px; width: 50px; height: 16px; background: var(--tape-green); transform: rotate(-1deg); z-index: 1; }
+        .places-body { display: grid; grid-template-columns: 250px 1fr; }
+
+        .places-stats { padding: 1.15rem; border-right: 1px solid var(--border); }
+        .places-stats-label { font-size: 0.76rem; color: var(--text-light); margin-bottom: 0.55rem; }
+        .stats-main { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.7rem; }
+        .donut { width: 52px; height: 52px; border-radius: 50%; background: conic-gradient(var(--grass) 0deg 75.6deg, var(--border) 75.6deg 360deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .donut-inner { width: 36px; height: 36px; border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; font-size: 0.68rem; font-weight: 800; color: var(--grass-dark); }
+        .country-count { font-size: 1.8rem; font-weight: 700; line-height: 1; font-family: -apple-system, sans-serif; }
+        .country-count-label { font-size: 0.6rem; color: var(--text-light); font-family: -apple-system, sans-serif; }
+        .stats-links { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.7rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border); }
+        .stats-link { font-family: -apple-system, sans-serif; font-size: 0.7rem; color: var(--grass-dark); text-decoration: none; }
+        .stats-link:hover { text-decoration: underline; }
+        .continents-label { font-family: -apple-system, sans-serif; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 0.25rem; }
+        .continents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1rem; font-family: -apple-system, sans-serif; font-size: 0.68rem; }
+        .continent-row { color: var(--text-light); }
+        .continent-row strong { color: var(--text); font-weight: 600; }
+        .continent-visited { color: var(--grass-dark); font-weight: 700; }
+        .add-places-btn { display: inline-block; margin-top: 0.6rem; padding: 0.35rem 0.7rem; border-radius: 12px; background: var(--grass); color: #fff; font-family: -apple-system, sans-serif; font-size: 0.65rem; font-weight: 600; text-decoration: none; }
+        .add-places-btn:hover { background: var(--grass-dark); }
+
+        .places-map { padding: 0.75rem; background: #E8E0D0; display: flex; align-items: center; }
+        .places-map svg { width: 100%; height: auto; }
+        .places-map svg .water { fill: #D8D0C0; }
+        .places-map svg .land { fill: #C8C0B0; stroke: #B8B0A0; stroke-width: 0.5; }
+        .places-map svg .visited { fill: var(--grass); stroke: var(--grass-dark); }
+        .places-map svg .visited:hover { fill: var(--red); }
+
+        /* ---- Guides — pinned notes ---- */
+        .guides { margin-bottom: 2rem; }
+        .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .guide-card {
+            background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
+            padding: 1rem; text-decoration: none; color: inherit; box-shadow: 1px 2px 6px rgba(0,0,0,0.06);
+            transition: transform 0.2s; position: relative;
+        }
+        .guide-card::after { content: ''; position: absolute; top: -5px; left: 50%; margin-left: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--red); box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .guide-card:hover { transform: translateY(-2px); }
+        .guide-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.15rem; }
+        .guide-card p { font-size: 0.72rem; color: var(--text-light); margin-bottom: 0.3rem; }
+        .guide-tags { display: flex; gap: 0.2rem; }
+        .guide-tag { font-family: -apple-system, sans-serif; font-size: 0.52rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.08rem 0.3rem; border-radius: 3px; background: rgba(90,158,111,0.1); color: var(--grass-dark); }
+
+        /* ---- Bucket List — postcard style ---- */
+        .bucket { margin-bottom: 2rem; }
+        .bucket-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .bucket-card {
+            background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
+            padding: 0.85rem; text-align: center; text-decoration: none; color: inherit;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.06); transition: transform 0.2s; position: relative;
+        }
+        .bucket-card:nth-child(1) { transform: rotate(0.8deg); }
+        .bucket-card:nth-child(2) { transform: rotate(-1deg); }
+        .bucket-card:nth-child(3) { transform: rotate(0.5deg); }
+        .bucket-card:nth-child(4) { transform: rotate(-0.7deg); }
+        .bucket-card:hover { transform: rotate(0deg) translateY(-3px); }
+        .bucket-card::before { content: ''; position: absolute; top: -5px; width: 42px; height: 14px; z-index: 1; }
+        .bucket-card:nth-child(1)::before { left: 10px; background: var(--tape-pink); transform: rotate(2deg); }
+        .bucket-card:nth-child(2)::before { right: 8px; background: var(--tape-green); transform: rotate(-1deg); }
+        .bucket-card:nth-child(3)::before { left: 12px; background: var(--tape-yellow); transform: rotate(3deg); }
+        .bucket-card:nth-child(4)::before { right: 10px; background: var(--tape-pink); transform: rotate(-2deg); }
+        .bucket-emoji { font-size: 1.5rem; margin-bottom: 0.3rem; }
+        .bucket-card h4 { font-size: 0.8rem; font-weight: 700; margin-bottom: 0.05rem; }
+        .bucket-card span { font-family: -apple-system, sans-serif; font-size: 0.62rem; color: var(--text-light); }
+
+        /* ---- Discover ---- */
+        .discover { margin-bottom: 2rem; }
+        .discover-pills { display: flex; gap: 0.4rem; margin-bottom: 1rem; }
+        .pill { font-family: -apple-system, sans-serif; font-size: 0.68rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 15px; border: 1.5px solid var(--border); color: var(--text-light); text-decoration: none; transition: all 0.2s; }
+        .pill:hover { border-color: var(--grass); color: var(--grass-dark); }
+        .pill.active { background: var(--grass); border-color: var(--grass); color: #fff; }
+
+        .discover-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .discover-card { background: var(--paper); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; text-decoration: none; color: inherit; transition: transform 0.2s; box-shadow: 1px 2px 6px rgba(0,0,0,0.05); }
+        .discover-card:hover { transform: translateY(-2px); }
+        .discover-visual { height: 70px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+        .vis-lisbon { background: linear-gradient(135deg, #F2D98D, #E8C060 50%, #D4A040); }
+        .vis-seoul { background: linear-gradient(135deg, #D4B0D8, #B888C0 50%, #9868A0); }
+        .vis-norway { background: linear-gradient(135deg, #8EC8D8, #68A8B8 50%, #4888A0); }
+        .vis-kyoto { background: linear-gradient(135deg, #FADADD, #F4A7B9 50%, #D888A0); }
+        .discover-body { padding: 0.65rem; }
+        .discover-body h4 { font-family: -apple-system, sans-serif; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.05rem; }
+        .discover-body span { font-family: -apple-system, sans-serif; font-size: 0.62rem; color: var(--text-light); }
+        .discover-type { display: inline-block; font-family: -apple-system, sans-serif; font-size: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.08rem 0.3rem; border-radius: 3px; background: rgba(90,158,111,0.1); color: var(--grass-dark); margin-bottom: 0.2rem; }
+
+        /* ---- Footer ---- */
+        footer { background: var(--brown); color: rgba(245,230,200,0.4); text-align: center; padding: 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.68rem; letter-spacing: 0.5px; }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 1000px) {
+            .polaroid-grid, .bucket-grid, .discover-grid { grid-template-columns: repeat(2, 1fr); }
+            .polaroid, .bucket-card { transform: rotate(0deg) !important; }
+        }
+        @media (max-width: 768px) {
+            .guide-grid { grid-template-columns: 1fr; }
+            .places-body { grid-template-columns: 1fr; }
+            .places-stats { border-right: none; border-bottom: 1px solid var(--border); }
+            .board { padding: 1.5rem; }
+        }
+        @media (max-width: 600px) {
+            nav { padding: 0.75rem 1.25rem; }
+            .welcome { flex-direction: column; gap: 0.75rem; }
+            .create-group { flex-wrap: wrap; }
+            .polaroid-grid, .bucket-grid, .discover-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; All iterations</a>
+
+    <nav>
+        <a href="#" class="logo">
+            <!-- Totoro-esque leaf/wind logo -->
+            <svg class="logo-icon" viewBox="0 0 34 34" fill="none">
+                <circle cx="17" cy="17" r="15" stroke="#F5E6C8" stroke-width="1.2" fill="none"/>
+                <!-- Leaf -->
+                <path d="M17 5 C22 12, 28 14, 29 17 C28 22, 22 28, 17 29 C12 28, 8 22, 7 17 C8 12, 12 8, 17 5Z" fill="#5A9E6F" opacity="0.8"/>
+                <!-- Leaf vein -->
+                <path d="M17 8 L17 26" stroke="#3D7A52" stroke-width="0.8"/>
+                <path d="M17 14 L12 11" stroke="#3D7A52" stroke-width="0.5"/>
+                <path d="M17 14 L22 11" stroke="#3D7A52" stroke-width="0.5"/>
+                <path d="M17 19 L11 16" stroke="#3D7A52" stroke-width="0.5"/>
+                <path d="M17 19 L23 16" stroke="#3D7A52" stroke-width="0.5"/>
+                <!-- Small airplane -->
+                <path d="M24 8 L26 7 L26.5 8.5 L25 10 L27 11.5 L26 12.5 L24 11 L22.5 12.5 L21.5 11.5Z" fill="#C0392B" opacity="0.9"/>
+            </svg>
+            <span class="logo-text">Tripscape</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">My Trips</a></li>
+            <li><a href="#">Guides</a></li>
+            <li><a href="#">Discover</a></li>
+            <li><a href="#" class="nav-ai">AI Planner</a></li>
+            <li><div class="nav-avatar">HZ</div></li>
+        </ul>
+    </nav>
+
+    <!-- Sky section is the body bg, board is the main content -->
+    <div class="board">
+
+        <!-- Welcome -->
+        <div class="welcome">
+            <div class="welcome-text">
+                <h1>Welcome back, <span>Helena</span></h1>
+                <p>The wind is calling — where will it take you?</p>
+            </div>
+            <div class="create-group">
+                <a href="#" class="btn btn-green">+ New Itinerary</a>
+                <a href="#" class="btn btn-brown">+ Write a Guide</a>
+                <a href="#" class="btn btn-ai"><span class="pro-tag">Pro</span> AI Trip Planner</a>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" placeholder="Search destinations, itineraries, or guides..." disabled>
+            <button class="search-btn" disabled>Search</button>
+        </div>
+
+        <!-- Upcoming -->
+        <div class="upcoming">
+            <div class="upcoming-card">
+                <div class="upcoming-left">
+                    <div class="countdown"><span class="countdown-num">12</span><span class="countdown-label">days</span></div>
+                    <div class="upcoming-info"><h3>Tokyo &amp; Kyoto</h3><span class="meta">Apr 8 – 18, 2025 &middot; 10 days &middot; 14 stops</span></div>
+                </div>
+                <a href="#" class="upcoming-link">View itinerary &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Itineraries -->
+        <div class="itineraries">
+            <div class="section-header"><h2>My Itineraries</h2><a href="#">View all &rarr;</a></div>
+            <div class="polaroid-grid">
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-tokyo">&#127983;</div>
+                    <div class="polaroid-caption"><h3>Tokyo &amp; Kyoto</h3><span class="meta">10 days &middot; 14 stops &middot; Apr 2025</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-patagonia">&#9968;</div>
+                    <div class="polaroid-caption"><h3>Patagonia Trek</h3><span class="meta">14 days &middot; 8 stops &middot; Jan 2025</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-iceland">&#127956;</div>
+                    <div class="polaroid-caption"><h3>Iceland Ring Road</h3><span class="meta">8 days &middot; 22 stops &middot; Aug 2024</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <div class="polaroid-photo photo-berlin">&#127939;</div>
+                    <div class="polaroid-caption"><h3>Berlin Marathon</h3><span class="meta">5 days &middot; 9 stops &middot; Sep 2025</span></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Places Traveled -->
+        <div class="places">
+            <div class="section-header"><h2>Places Traveled</h2></div>
+            <div class="places-card">
+                <div class="places-body">
+                    <div class="places-stats">
+                        <div class="places-stats-label">You have been to...</div>
+                        <div class="stats-main">
+                            <div class="donut"><div class="donut-inner">21%</div></div>
+                            <div><div class="country-count">41</div><div class="country-count-label">Out of 195 UN Countries</div></div>
+                        </div>
+                        <div class="stats-links">
+                            <a href="#" class="stats-link">&#9679; My Continents</a>
+                            <a href="#" class="stats-link">&#9679; My Countries</a>
+                            <a href="#" class="stats-link">&#9679; My Cities</a>
+                        </div>
+                        <div class="continents-label">UN Countries</div>
+                        <div class="continents-grid">
+                            <span class="continent-row"><strong>Africa:</strong> <span class="continent-visited">5</span>/54</span>
+                            <span class="continent-row"><strong>N. America:</strong> <span class="continent-visited">3</span>/23</span>
+                            <span class="continent-row"><strong>Asia:</strong> <span class="continent-visited">8</span>/48</span>
+                            <span class="continent-row"><strong>Oceania:</strong> <span class="continent-visited">1</span>/14</span>
+                            <span class="continent-row"><strong>Europe:</strong> <span class="continent-visited">20</span>/46</span>
+                            <span class="continent-row"><strong>S. America:</strong> <span class="continent-visited">4</span>/12</span>
+                            <span class="continent-row"><strong>Antarctica:</strong> <span class="continent-visited">0</span>/2</span>
+                        </div>
+                        <a href="#" class="add-places-btn">+ Add visited places</a>
+                    </div>
+                    <div class="places-map">
+                        <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="water" x="0" y="0" width="1000" height="500"/>
+                            <path class="land visited" d="M100,30 L220,20 L270,50 L280,100 L270,140 L250,170 L200,180 L160,170 L130,140 L110,100 L95,60Z"/>
+                            <path class="land visited" d="M140,170 L190,168 L200,200 L185,225 L160,220 L135,200Z"/>
+                            <path class="land" d="M210,190 L240,185 L245,200 L225,205Z"/>
+                            <path class="land visited" d="M190,235 L250,225 L290,260 L300,320 L285,380 L260,410 L230,400 L210,360 L200,300 L185,260Z"/>
+                            <path class="land" d="M280,10 L320,5 L345,30 L335,60 L310,65 L280,45Z"/>
+                            <path class="land visited" d="M370,50 L392,44 L400,58 L388,65 L372,60Z"/>
+                            <path class="land visited" d="M395,80 L412,74 L418,98 L408,108 L395,100Z"/>
+                            <path class="land visited" d="M430,28 L450,20 L465,40 L468,75 L458,88 L440,80 L432,55Z"/>
+                            <path class="land visited" d="M400,100 L440,92 L455,115 L450,145 L430,155 L405,150 L395,130Z"/>
+                            <path class="land visited" d="M385,148 L415,142 L422,162 L412,175 L388,172Z"/>
+                            <path class="land visited" d="M445,80 L490,72 L510,95 L505,130 L480,138 L455,130 L448,105Z"/>
+                            <path class="land visited" d="M435,130 L465,125 L475,150 L468,172 L450,175 L435,160Z"/>
+                            <path class="land" d="M490,15 L650,5 L750,20 L780,50 L770,72 L700,62 L600,58 L530,65 L500,50Z"/>
+                            <path class="land visited" d="M480,135 L520,128 L540,140 L535,155 L510,160 L485,152Z"/>
+                            <path class="land visited" d="M375,178 L460,168 L480,185 L475,210 L440,220 L390,215 L372,198Z"/>
+                            <path class="land" d="M370,220 L420,225 L430,260 L415,285 L385,280 L368,255Z"/>
+                            <path class="land visited" d="M440,225 L500,218 L515,250 L510,295 L490,310 L460,305 L440,275Z"/>
+                            <path class="land visited" d="M430,310 L490,305 L510,335 L505,375 L480,390 L450,385 L430,355Z"/>
+                            <path class="land visited" d="M510,155 L555,148 L570,172 L565,205 L540,215 L515,210 L505,185Z"/>
+                            <path class="land" d="M560,85 L620,78 L645,100 L638,128 L610,135 L575,128 L560,108Z"/>
+                            <path class="land visited" d="M590,155 L630,145 L650,175 L645,215 L625,240 L600,235 L585,205 L580,178Z"/>
+                            <path class="land visited" d="M635,65 L720,55 L758,82 L750,120 L720,138 L685,140 L660,128 L645,100Z"/>
+                            <path class="land visited" d="M770,80 L785,72 L790,100 L782,118 L770,112Z"/>
+                            <path class="land visited" d="M752,95 L765,90 L768,110 L758,115Z"/>
+                            <path class="land visited" d="M660,155 L700,148 L718,175 L712,210 L690,218 L665,212 L655,185Z"/>
+                            <path class="land visited" d="M670,225 L730,218 L760,235 L755,255 L720,260 L680,255 L668,242Z"/>
+                            <path class="land" d="M720,310 L790,298 L835,320 L840,360 L815,385 L775,390 L740,378 L720,348Z"/>
+                            <path class="land" d="M855,370 L865,365 L870,390 L862,400Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guides -->
+        <div class="guides">
+            <div class="section-header"><h2>My Guides</h2><a href="#">View all &rarr;</a></div>
+            <div class="guide-grid">
+                <a href="#" class="guide-card"><h3>The Perfect 3 Days in Kyoto</h3><p>Temples, tea ceremonies, and hidden gardens for first-timers.</p><div class="guide-tags"><span class="guide-tag">Japan</span><span class="guide-tag">Culture</span></div></a>
+                <a href="#" class="guide-card"><h3>Hiking the W Trek</h3><p>Gear, timing, refugios — the honest truth about Patagonia.</p><div class="guide-tags"><span class="guide-tag">Chile</span><span class="guide-tag">Hiking</span></div></a>
+                <a href="#" class="guide-card"><h3>NYC Marathon as a Tourist</h3><p>Balancing race prep with enjoying the city.</p><div class="guide-tags"><span class="guide-tag">NYC</span><span class="guide-tag">Running</span></div></a>
+            </div>
+        </div>
+
+        <!-- Bucket List -->
+        <div class="bucket">
+            <div class="section-header"><h2>Where to Next</h2><a href="#">Edit list &rarr;</a></div>
+            <div class="bucket-grid">
+                <a href="#" class="bucket-card"><div class="bucket-emoji">&#127774;</div><h4>Morocco</h4><span>Marrakech, Sahara, Fez</span></a>
+                <a href="#" class="bucket-card"><div class="bucket-emoji">&#127752;</div><h4>New Zealand</h4><span>Milford Sound, Queenstown</span></a>
+                <a href="#" class="bucket-card"><div class="bucket-emoji">&#127843;</div><h4>Oaxaca, Mexico</h4><span>Food, mezcal, Monte Alban</span></a>
+                <a href="#" class="bucket-card"><div class="bucket-emoji">&#127966;</div><h4>Norway Fjords</h4><span>Lofoten, Northern Lights</span></a>
+            </div>
+        </div>
+
+        <!-- Discover -->
+        <div class="discover">
+            <div class="section-header"><h2>Discover</h2><a href="#">Browse all &rarr;</a></div>
+            <div class="discover-pills">
+                <a href="#" class="pill active">Trending</a>
+                <a href="#" class="pill">Itineraries</a>
+                <a href="#" class="pill">Guides</a>
+                <a href="#" class="pill">Destinations</a>
+            </div>
+            <div class="discover-grid">
+                <a href="#" class="discover-card"><div class="discover-visual vis-lisbon">&#127987;</div><div class="discover-body"><span class="discover-type">Destination</span><h4>Lisbon, Portugal</h4><span>342 itineraries &middot; 89 guides</span></div></a>
+                <a href="#" class="discover-card"><div class="discover-visual vis-seoul">&#127884;</div><div class="discover-body"><span class="discover-type">Destination</span><h4>Seoul, South Korea</h4><span>287 itineraries &middot; 64 guides</span></div></a>
+                <a href="#" class="discover-card"><div class="discover-visual vis-norway">&#127966;</div><div class="discover-body"><span class="discover-type">Itinerary</span><h4>Lofoten Northern Lights</h4><span>by @arctic_wanderer &middot; 670 saves</span></div></a>
+                <a href="#" class="discover-card"><div class="discover-visual vis-kyoto">&#128218;</div><div class="discover-body"><span class="discover-type">Guide</span><h4>48 Hours in Lisbon</h4><span>by @maria_adventures &middot; 2.1K saves</span></div></a>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 Tripscape</p></footer>
+</body>
+</html>
