@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 25: Final Polish</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            color: #1A1A1A;
+            min-height: 100vh;
+            background: #F8F6F0;
+        }
+
+        .back-link {
+            position: fixed; bottom: 1rem; right: 1rem; font-size: 0.75rem;
+            color: #888; text-decoration: none; background: #FFF;
+            padding: 0.35rem 0.7rem; border: 2.5px solid #1A1A1A; border-radius: 20px; z-index: 300; font-weight: 700;
+        }
+
+        .content { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+        /* ======== HEADER ======== */
+        .hdr {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.85rem 0; border-bottom: 4px solid #1B4332;
+        }
+        .logo {
+            text-decoration: none; color: #1B4332; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .logo span { color: #7B2D8E; }
+        .logo svg { flex-shrink: 0; }
+
+        .nav-bar { display: flex; list-style: none; gap: 0.35rem; align-items: center; }
+        .nav-bar a {
+            text-decoration: none; font-size: 0.78rem; font-weight: 700;
+            padding: 0.35rem 0.75rem; border-radius: 20px; border: 2.5px solid #1B4332;
+            color: #1B4332; transition: all 0.15s;
+        }
+        .nav-bar a:hover { background: #1B4332; color: #F8F6F0; }
+        .nav-bar a.active { background: #7B2D8E; color: #FFF; border-color: #7B2D8E; }
+        .nav-bar .ai-nav { border-color: #D4A373; color: #A07840; font-size: 0.7rem; }
+        .nav-bar .ai-nav:hover { background: #D4A373; color: #FFF; }
+        .nav-avatar {
+            width: 34px; height: 34px; border-radius: 50%; border: 3px solid #1B4332;
+            background: #7B2D8E; display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; font-weight: 900; color: #FFF;
+        }
+
+        /* ======== HERO ======== */
+        .hero { padding: 3.5rem 0 2.5rem; border-bottom: 4px solid #1B4332; }
+
+        .hero h1 { font-size: 4.5rem; font-weight: 900; line-height: 0.92; letter-spacing: -3px; text-transform: uppercase; }
+        .hero h1 .l1 { color: #1B4332; }
+        .hero h1 .l2 { color: #7B2D8E; }
+        .hero h1 .l3 { color: #D4A373; }
+
+        .hero p { font-size: 1.05rem; color: #7A7A6A; margin-top: 0.6rem; max-width: 460px; }
+
+        .hero-btns { display: flex; gap: 0.5rem; margin-top: 1.5rem; align-items: center; }
+        .btn {
+            padding: 0.75rem 1.5rem; border-radius: 25px; border: 3px solid #1B4332;
+            font-size: 0.85rem; font-weight: 800; text-decoration: none;
+            text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.15s;
+        }
+        .btn:hover { transform: scale(1.04); }
+        .btn-emerald {
+            background: #1B4332; color: #F8F6F0; border-color: #1B4332;
+            padding: 0.9rem 2rem; font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(27,67,50,0.25);
+        }
+        .btn-plum { background: #7B2D8E; color: #FFF; border-color: #7B2D8E; }
+        .btn-tan { background: #D4A373; color: #FFF; border-color: #D4A373; font-size: 0.75rem; }
+
+        /* ======== SEARCH ======== */
+        .search-section { padding: 1.25rem 0; border-bottom: 4px solid #1B4332; }
+        .search-bar { display: flex; background: #FFF; border: 2px solid #D0C8B8; border-radius: 30px; overflow: hidden; }
+        .search-bar input { flex: 1; padding: 0.7rem 1.15rem; border: none; font-size: 0.95rem; background: transparent; color: #1A1A1A; outline: none; }
+        .search-bar input::placeholder { color: #B0B0A0; }
+        .search-btn { padding: 0.7rem 1.3rem; background: #2A5A42; border: none; color: #F8F6F0; font-size: 0.8rem; font-weight: 700; cursor: pointer; border-radius: 0 28px 28px 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ======== COUNTDOWN ======== */
+        .countdown-bar {
+            padding: 1rem 0; border-bottom: 4px solid #1B4332;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .cd-left { display: flex; align-items: center; gap: 1rem; }
+
+        .cd-badge {
+            background: #7B2D8E; color: #FFF; border-radius: 14px;
+            padding: 0.5rem 0.85rem; text-align: center; min-width: 65px;
+            border: 3px solid #5A1A6E;
+        }
+        .cd-badge .num { font-size: 1.8rem; font-weight: 900; line-height: 1; }
+        .cd-badge .lbl { font-size: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+
+        .cd-info h3 { font-size: 1.1rem; font-weight: 800; }
+        .cd-info .meta { font-size: 0.75rem; color: #7A7A6A; }
+
+        .cd-link { font-size: 0.78rem; font-weight: 700; color: #7B2D8E; text-decoration: none; }
+        .cd-link:hover { text-decoration: underline; }
+
+        /* ======== ITINERARIES ======== */
+        .itin-section { padding: 2rem 0; border-bottom: 4px solid #1B4332; }
+
+        .status-badge {
+            position: absolute; top: 8px; right: 8px;
+            font-size: 0.52rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 0.12rem 0.4rem; border-radius: 8px;
+            z-index: 2;
+        }
+        .status-upcoming { background: #7B2D8E; color: #FFF; }
+        .status-completed { background: #1B4332; color: #F8F6F0; }
+
+        .sf-label {
+            font-size: 0.85rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 3px; margin-bottom: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .sf-label a { color: #7B2D8E; text-decoration: none; letter-spacing: 1px; font-size: 0.72rem; }
+
+        .itin-strip { display: flex; gap: 1.25rem; overflow-x: auto; padding-bottom: 0.75rem; }
+
+        .polaroid {
+            flex-shrink: 0; width: 200px; background: #FFF;
+            padding: 0.55rem 0.55rem 0.85rem;
+            box-shadow: 2px 3px 12px rgba(0,0,0,0.08);
+            text-decoration: none; color: inherit; display: block;
+            transition: transform 0.2s; position: relative;
+        }
+        .polaroid:nth-child(1) { transform: rotate(-1.5deg); }
+        .polaroid:nth-child(2) { transform: rotate(1deg); }
+        .polaroid:nth-child(3) { transform: rotate(-0.7deg); }
+        .polaroid:nth-child(4) { transform: rotate(1.3deg); }
+        .polaroid:hover { transform: rotate(0deg) translateY(-5px); box-shadow: 3px 6px 20px rgba(0,0,0,0.12); }
+
+        .polaroid::before {
+            content: ''; position: absolute; top: -7px; z-index: 1; width: 52px; height: 18px;
+        }
+        .polaroid:nth-child(1)::before { left: 14px; background: rgba(212,163,115,0.6); transform: rotate(3deg); }
+        .polaroid:nth-child(2)::before { right: 12px; background: rgba(123,45,142,0.2); transform: rotate(-2deg); }
+        .polaroid:nth-child(3)::before { left: 18px; background: rgba(27,67,50,0.15); transform: rotate(1deg); }
+        .polaroid:nth-child(4)::before { right: 16px; background: rgba(212,163,115,0.6); transform: rotate(-3deg); }
+
+        .pol-photo {
+            height: 140px; margin-bottom: 0.65rem; display: flex;
+            align-items: center; justify-content: center; font-size: 3rem;
+        }
+        .ph-1 { background: linear-gradient(135deg, #E8C8D8, #C8A0B8 50%, #A880A0); }
+        .ph-2 { background: linear-gradient(135deg, #C0D8E8, #88B8C8 50%, #68A0B0); }
+        .ph-3 { background: linear-gradient(135deg, #C8E0D0, #88C098 50%, #68A878); }
+        .ph-4 { background: linear-gradient(135deg, #E8D8C0, #C8B898 50%, #A89878); }
+
+        .pol-caption h3 { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.05rem; }
+        .pol-caption .sub { font-size: 0.72rem; color: #8A8A7A; }
+        .pol-caption .tag {
+            display: inline-block; margin-top: 0.3rem;
+            font-size: 0.6rem; font-weight: 700; color: #7B2D8E;
+            background: #F0E0F4; padding: 0.12rem 0.4rem; border-radius: 10px;
+        }
+
+        /* ======== MIDDLE ROW — places traveled + bucket list ======== */
+        .middle-row { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 4px solid #1B4332; }
+
+        .mid-left { padding: 2rem 2rem 2rem 0; border-right: 4px solid #1B4332; }
+        .mid-right { padding: 2rem 0 2rem 2rem; }
+
+        /* Places Traveled */
+        .map-dash { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: flex-start; margin-bottom: 1rem; }
+
+        .donut-wrap { flex-shrink: 0; text-align: center; }
+        .donut {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: conic-gradient(#7B2D8E 0deg 75.6deg, #E8E0D0 75.6deg 360deg);
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid #1B4332;
+        }
+        .donut-inner {
+            width: 54px; height: 54px; border-radius: 50%; background: #F8F6F0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: 900; color: #7B2D8E;
+        }
+        .donut-label { font-size: 0.6rem; color: #8A8A7A; margin-top: 0.25rem; font-weight: 700; }
+
+        .map-stats h3 { font-size: 2.5rem; font-weight: 900; line-height: 1; color: #1B4332; }
+        .map-stats .lbl { font-size: 0.8rem; color: #8A8A7A; display: block; margin-bottom: 0.5rem; }
+        .map-links { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 0.5rem; }
+        .map-links a { font-size: 0.82rem; color: #7B2D8E; text-decoration: none; font-weight: 700; }
+        .map-links a:hover { text-decoration: underline; }
+
+        .cont-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1rem; font-size: 0.78rem; }
+        .cont-grid span { color: #AAA; }
+        .cont-grid strong { color: #1A1A1A; }
+        .cont-grid .cv { color: #7B2D8E; font-weight: 800; }
+        .add-link { display: inline-block; margin-top: 0.5rem; font-size: 0.65rem; font-weight: 800; color: #1B4332; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Map */
+        .full-map {
+            background: #F0ECD8; border: 3px solid #1B4332; border-radius: 8px;
+            padding: 0; overflow: hidden;
+        }
+        .full-map svg { width: 100%; height: auto; display: block; }
+        .full-map svg .water { fill: #E8E4D4; }
+        .full-map svg .land { fill: #D0C8B8; stroke: #C0B8A8; stroke-width: 0.5; }
+        .full-map svg .visited { fill: #1B4332; stroke: #2A5A42; }
+        .full-map svg .visited:hover { fill: #7B2D8E; }
+
+        /* Bucket list */
+        .bucket-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+        .bucket-card {
+            background: #FFF; padding: 0.85rem; text-align: center;
+            text-decoration: none; color: inherit;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.15s; position: relative;
+        }
+        .bucket-card:nth-child(1) { transform: rotate(-1deg); }
+        .bucket-card:nth-child(2) { transform: rotate(0.8deg); }
+        .bucket-card:nth-child(3) { transform: rotate(0.5deg); }
+        .bucket-card:nth-child(4) { transform: rotate(-0.8deg); }
+        .bucket-card:hover { transform: rotate(0deg) scale(1.03); }
+
+        .bucket-card::before {
+            content: ''; position: absolute; top: -6px; z-index: 1; width: 40px; height: 14px;
+        }
+        .bucket-card:nth-child(1)::before { left: 10px; background: rgba(123,45,142,0.2); transform: rotate(2deg); }
+        .bucket-card:nth-child(2)::before { right: 8px; background: rgba(27,67,50,0.15); transform: rotate(-1deg); }
+        .bucket-card:nth-child(3)::before { left: 12px; background: rgba(212,163,115,0.5); transform: rotate(3deg); }
+        .bucket-card:nth-child(4)::before { right: 10px; background: rgba(123,45,142,0.2); transform: rotate(-2deg); }
+
+        .bucket-emoji { font-size: 1.5rem; margin-bottom: 0.2rem; }
+        .bucket-card h4 { font-size: 0.95rem; font-weight: 800; }
+        .bucket-card span { font-size: 0.72rem; color: #8A8A7A; }
+
+        /* ======== GUIDES ======== */
+        .guides-section { padding: 2rem 0; border-bottom: 4px solid #1B4332; }
+
+        .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+        .guide-pin {
+            background: #FFF; padding: 1rem;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.06);
+            text-decoration: none; color: inherit;
+            transition: transform 0.15s; position: relative;
+        }
+        .guide-pin:hover { transform: translateY(-3px); }
+        .guide-pin::after {
+            content: ''; position: absolute; top: -5px; left: 50%; margin-left: -5px;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #7B2D8E; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .guide-pin h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 0.15rem; }
+        .guide-pin p { font-size: 0.82rem; color: #8A8A7A; line-height: 1.5; }
+        .guide-pin .tags { font-size: 0.65rem; color: #1B4332; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.25rem; }
+
+        /* ======== BOTTOM — saved + trending ======== */
+        .bottom-split { display: grid; grid-template-columns: 1fr 1.3fr; border-bottom: 4px solid #1B4332; }
+        .bot-left { padding: 2rem 2rem 2rem 0; border-right: 4px solid #1B4332; }
+        .bot-right { padding: 2rem 0 2rem 2rem; }
+
+        /* Saved */
+        .saved-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.65rem 0; border-bottom: 2px solid #F0ECD8;
+            text-decoration: none; color: inherit; position: relative;
+        }
+        .saved-item:last-child { border-bottom: none; }
+        .saved-item:hover { background: #F8F6F0; margin: 0 -0.5rem; padding-left: 0.5rem; padding-right: 0.5rem; border-radius: 8px; }
+        .saved-item::before {
+            content: ''; position: absolute; left: -12px; top: 50%; margin-top: -4px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #D4A373; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .saved-info h4 { font-size: 0.95rem; font-weight: 700; }
+        .saved-info .meta { font-size: 0.75rem; color: #8A8A7A; }
+        .saved-type {
+            font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 0.15rem 0.45rem; border-radius: 10px;
+        }
+        .type-guide { background: #F0E0F4; color: #7B2D8E; }
+        .type-itin { background: #D8F0E0; color: #1B4332; }
+
+        /* Trending */
+        .trend-pills { display: flex; gap: 0.3rem; margin-bottom: 0.85rem; }
+        .tpill {
+            font-size: 0.65rem; font-weight: 800; padding: 0.3rem 0.7rem;
+            border-radius: 14px; border: 2.5px solid #1B4332;
+            text-decoration: none; color: #AAA;
+        }
+        .tpill:hover { color: #1B4332; }
+        .tpill.active { background: #1B4332; color: #F8F6F0; }
+
+        .trend-item {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.55rem 0; border-bottom: 2px solid #F0ECD8;
+            text-decoration: none; color: inherit;
+        }
+        .trend-item:last-child { border-bottom: none; }
+        .trend-num { font-size: 1.3rem; font-weight: 900; color: #E0D8C8; width: 26px; }
+        .trend-item h4 { font-size: 0.9rem; font-weight: 800; }
+        .trend-item span { font-size: 0.7rem; color: #AAA; }
+        .trend-type {
+            margin-left: auto; font-size: 0.58rem; font-weight: 800;
+            text-transform: uppercase; padding: 0.12rem 0.4rem; border-radius: 8px;
+        }
+        .tp-dest { background: #D8F0E0; color: #1B4332; }
+        .tp-itin { background: #F0E0F4; color: #7B2D8E; }
+        .tp-guide { background: #FFF0E0; color: #A07840; }
+
+        /* ======== FOOTER ======== */
+        .site-footer {
+            background: #1B4332; color: #E8E0D0; margin-top: 0;
+        }
+        .footer-content {
+            max-width: 1100px; margin: 0 auto; padding: 0 2rem;
+        }
+        .footer-top {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+            padding: 2.5rem 0 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+        .footer-col h4 {
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 0.75rem; color: #D4A373;
+        }
+        .footer-col a {
+            display: block; font-size: 0.78rem; color: #C0D8C8;
+            text-decoration: none; padding: 0.2rem 0; transition: color 0.15s;
+        }
+        .footer-col a:hover { color: #FFF; }
+        .footer-bottom {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.25rem 0; font-size: 0.7rem; color: #8AAA98;
+        }
+        .footer-social { display: flex; gap: 1.25rem; }
+        .footer-social a {
+            color: #8AAA98; text-decoration: none; font-size: 0.72rem; font-weight: 700;
+            transition: color 0.15s;
+        }
+        .footer-social a:hover { color: #FFF; }
+
+        /* ======== RESPONSIVE ======== */
+        @media (max-width: 900px) {
+            .middle-row, .bottom-split { grid-template-columns: 1fr; }
+            .mid-left { border-right: none; border-bottom: 4px solid #1B4332; padding: 1.5rem 0; }
+            .mid-right { padding: 1.5rem 0; }
+            .bot-left { border-right: none; border-bottom: 4px solid #1B4332; padding: 1.5rem 0; }
+            .bot-right { padding: 1.5rem 0; }
+            .guide-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 3rem; }
+            .countdown-bar { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+            .footer-top { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .content { padding: 0 1rem; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero-btns { flex-direction: column; align-items: flex-start; }
+            .polaroid { width: 170px; transform: rotate(0deg) !important; }
+            .bucket-grid { grid-template-columns: 1fr; }
+            .bucket-card { transform: rotate(0deg) !important; }
+            .nav-bar { gap: 0.2rem; }
+            .nav-bar a { padding: 0.25rem 0.5rem; font-size: 0.65rem; }
+            .footer-top { grid-template-columns: 1fr 1fr; }
+            .footer-bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; Back</a>
+
+    <div class="content">
+
+        <!-- Header -->
+        <header class="hdr">
+            <a href="#" class="logo">
+                <svg viewBox="0 0 34 34" width="34" height="34" fill="none">
+                    <circle cx="17" cy="17" r="15.5" stroke="#1B4332" stroke-width="1.5"/>
+                    <ellipse cx="17" cy="17" rx="9" ry="15.5" stroke="#1B4332" stroke-width="0.8" fill="none"/>
+                    <line x1="1.5" y1="12" x2="32.5" y2="12" stroke="#1B4332" stroke-width="0.6"/>
+                    <line x1="1.5" y1="22" x2="32.5" y2="22" stroke="#1B4332" stroke-width="0.6"/>
+                    <path d="M24 8 L26 7 L27 8 L25 10 L28 12 L27 13 L24 11 L22 13 L21 12Z" fill="#7B2D8E"/>
+                    <path d="M8 24 Q14 14, 24 8" stroke="#7B2D8E" stroke-width="0.8" fill="none" stroke-dasharray="2,2"/>
+                </svg>
+                TRIP<span>SCAPE</span>
+            </a>
+            <nav>
+                <ul class="nav-bar">
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#">Trips</a></li>
+                    <li><a href="#">Guides</a></li>
+                    <li><a href="#">Discover</a></li>
+                    <li><a href="#" class="ai-nav">AI Pro</a></li>
+                    <li><div class="nav-avatar">HZ</div></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Hero -->
+        <section class="hero">
+            <h1>
+                <span class="l1">Plan.</span><br>
+                <span class="l2">Share.</span><br>
+                <span class="l3">Explore.</span>
+            </h1>
+            <p>Build your itineraries, write travel guides, and track every corner of the world you've seen. Welcome back, Helena.</p>
+            <div class="hero-btns">
+                <a href="#" class="btn btn-emerald">+ New Itinerary</a>
+                <a href="#" class="btn btn-plum">+ Write Guide</a>
+                <a href="#" class="btn btn-tan">&#10024; AI Planner</a>
+            </div>
+        </section>
+
+        <!-- Search -->
+        <div class="search-section">
+            <div class="search-bar">
+                <input type="text" placeholder="Search destinations, itineraries, or guides..." disabled>
+                <button class="search-btn" disabled>Search</button>
+            </div>
+        </div>
+
+        <!-- Countdown -->
+        <div class="countdown-bar">
+            <div class="cd-left">
+                <div class="cd-badge">
+                    <div class="num">12</div>
+                    <div class="lbl">days</div>
+                </div>
+                <div class="cd-info">
+                    <h3>Next up: Tokyo &amp; Kyoto</h3>
+                    <span class="meta">Apr 8 – 18, 2025 &middot; 10 days &middot; 14 stops</span>
+                </div>
+            </div>
+            <a href="#" class="cd-link">View itinerary &rarr;</a>
+        </div>
+
+        <!-- Itineraries — reverse chronological -->
+        <section class="itin-section">
+            <div class="sf-label">My Itineraries <a href="#">View All &rarr;</a></div>
+            <div class="itin-strip">
+                <a href="#" class="polaroid">
+                    <span class="status-badge status-upcoming">Upcoming</span>
+                    <div class="pol-photo ph-1">&#127983;</div>
+                    <div class="pol-caption"><h3>Tokyo &amp; Kyoto</h3><span class="sub">14 stops</span><span class="tag">10 days &middot; Apr 2025</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <span class="status-badge status-completed">Completed</span>
+                    <div class="pol-photo ph-4">&#127939;</div>
+                    <div class="pol-caption"><h3>Berlin Marathon</h3><span class="sub">9 stops</span><span class="tag">5 days &middot; Sep 2024</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <span class="status-badge status-completed">Completed</span>
+                    <div class="pol-photo ph-3">&#9968;</div>
+                    <div class="pol-caption"><h3>Patagonia Trek</h3><span class="sub">8 stops</span><span class="tag">14 days &middot; Jan 2024</span></div>
+                </a>
+                <a href="#" class="polaroid">
+                    <span class="status-badge status-completed">Completed</span>
+                    <div class="pol-photo ph-2">&#127956;</div>
+                    <div class="pol-caption"><h3>Iceland Ring Road</h3><span class="sub">22 stops</span><span class="tag">8 days &middot; Aug 2023</span></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Middle — places traveled + bucket list -->
+        <div class="middle-row">
+            <div class="mid-left">
+                <div class="sf-label">Places Traveled</div>
+                <div class="map-dash">
+                    <div class="donut-wrap">
+                        <div class="donut"><div class="donut-inner">21%</div></div>
+                        <div class="donut-label">Explored</div>
+                    </div>
+                    <div class="map-stats">
+                        <h3>41</h3>
+                        <span class="lbl">of 195 countries</span>
+                        <div class="map-links">
+                            <a href="#">Continents</a>
+                            <a href="#">Countries</a>
+                            <a href="#">Cities</a>
+                        </div>
+                        <div class="cont-grid">
+                            <span><strong>Africa:</strong> <span class="cv">5</span>/54</span>
+                            <span><strong>N.Am:</strong> <span class="cv">3</span>/23</span>
+                            <span><strong>Asia:</strong> <span class="cv">8</span>/48</span>
+                            <span><strong>Ocean:</strong> <span class="cv">1</span>/14</span>
+                            <span><strong>Europe:</strong> <span class="cv">20</span>/46</span>
+                            <span><strong>S.Am:</strong> <span class="cv">4</span>/12</span>
+                        </div>
+                        <a href="#" class="add-link">+ Add Places</a>
+                    </div>
+                </div>
+                <div class="full-map">
+                    <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                        <rect class="water" x="0" y="0" width="1000" height="500"/>
+                        <path class="land visited" d="M100,30 L220,20 L270,50 L280,100 L270,140 L250,170 L200,180 L160,170 L130,140 L110,100 L95,60Z"/>
+                        <path class="land visited" d="M140,170 L190,168 L200,200 L185,225 L160,220 L135,200Z"/>
+                        <path class="land" d="M210,190 L240,185 L245,200 L225,205Z"/>
+                        <path class="land visited" d="M190,235 L250,225 L290,260 L300,320 L285,380 L260,410 L230,400 L210,360 L200,300 L185,260Z"/>
+                        <path class="land" d="M280,10 L320,5 L345,30 L335,60 L310,65 L280,45Z"/>
+                        <path class="land visited" d="M370,50 L392,44 L400,58 L388,65 L372,60Z"/>
+                        <path class="land visited" d="M395,80 L412,74 L418,98 L408,108 L395,100Z"/>
+                        <path class="land visited" d="M430,28 L450,20 L465,40 L468,75 L458,88 L440,80 L432,55Z"/>
+                        <path class="land visited" d="M400,100 L440,92 L455,115 L450,145 L430,155 L405,150 L395,130Z"/>
+                        <path class="land visited" d="M385,148 L415,142 L422,162 L412,175 L388,172Z"/>
+                        <path class="land visited" d="M445,80 L490,72 L510,95 L505,130 L480,138 L455,130 L448,105Z"/>
+                        <path class="land visited" d="M435,130 L465,125 L475,150 L468,172 L450,175 L435,160Z"/>
+                        <path class="land" d="M490,15 L650,5 L750,20 L780,50 L770,72 L700,62 L600,58 L530,65 L500,50Z"/>
+                        <path class="land visited" d="M480,135 L520,128 L540,140 L535,155 L510,160 L485,152Z"/>
+                        <path class="land visited" d="M375,178 L460,168 L480,185 L475,210 L440,220 L390,215 L372,198Z"/>
+                        <path class="land" d="M370,220 L420,225 L430,260 L415,285 L385,280 L368,255Z"/>
+                        <path class="land visited" d="M440,225 L500,218 L515,250 L510,295 L490,310 L460,305 L440,275Z"/>
+                        <path class="land visited" d="M430,310 L490,305 L510,335 L505,375 L480,390 L450,385 L430,355Z"/>
+                        <path class="land visited" d="M510,155 L555,148 L570,172 L565,205 L540,215 L515,210 L505,185Z"/>
+                        <path class="land" d="M560,85 L620,78 L645,100 L638,128 L610,135 L575,128 L560,108Z"/>
+                        <path class="land visited" d="M590,155 L630,145 L650,175 L645,215 L625,240 L600,235 L585,205 L580,178Z"/>
+                        <path class="land visited" d="M635,65 L720,55 L758,82 L750,120 L720,138 L685,140 L660,128 L645,100Z"/>
+                        <path class="land visited" d="M770,80 L785,72 L790,100 L782,118 L770,112Z"/>
+                        <path class="land visited" d="M752,95 L765,90 L768,110 L758,115Z"/>
+                        <path class="land visited" d="M660,155 L700,148 L718,175 L712,210 L690,218 L665,212 L655,185Z"/>
+                        <path class="land visited" d="M670,225 L730,218 L760,235 L755,255 L720,260 L680,255 L668,242Z"/>
+                        <path class="land" d="M720,310 L790,298 L835,320 L840,360 L815,385 L775,390 L740,378 L720,348Z"/>
+                        <path class="land" d="M855,370 L865,365 L870,390 L862,400Z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="mid-right">
+                <div class="sf-label">Bucket List <a href="#">Edit &rarr;</a></div>
+                <div class="bucket-grid">
+                    <a href="#" class="bucket-card"><div class="bucket-emoji">&#127774;</div><h4>Morocco</h4><span>Marrakech, Sahara</span></a>
+                    <a href="#" class="bucket-card"><div class="bucket-emoji">&#127752;</div><h4>New Zealand</h4><span>Milford Sound</span></a>
+                    <a href="#" class="bucket-card"><div class="bucket-emoji">&#127798;</div><h4>Oaxaca</h4><span>Food, mezcal</span></a>
+                    <a href="#" class="bucket-card"><div class="bucket-emoji">&#127966;</div><h4>Norway</h4><span>Lofoten, lights</span></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guides -->
+        <section class="guides-section">
+            <div class="sf-label">My Guides <a href="#">View All &rarr;</a></div>
+            <div class="guide-grid">
+                <a href="#" class="guide-pin"><h3>3 Days in Kyoto</h3><p>Temples, tea ceremonies, and hidden gardens for first-timers.</p><div class="tags">Japan &middot; Culture</div></a>
+                <a href="#" class="guide-pin"><h3>Hiking the W Trek</h3><p>Gear, timing, refugios — the honest truth about Patagonia.</p><div class="tags">Chile &middot; Hiking</div></a>
+                <a href="#" class="guide-pin"><h3>NYC Marathon</h3><p>Race prep meets city exploration — expo to finish line.</p><div class="tags">NYC &middot; Running</div></a>
+            </div>
+        </section>
+
+        <!-- Bottom — saved + trending -->
+        <div class="bottom-split">
+            <div class="bot-left">
+                <div class="sf-label">Saved Guides &amp; Itineraries <a href="#">View All &rarr;</a></div>
+                <a href="#" class="saved-item">
+                    <div class="saved-info"><h4>48 Hours in Lisbon on a Budget</h4><span class="meta">by @maria_adventures &middot; 2.1K saves</span></div>
+                    <span class="saved-type type-guide">Guide</span>
+                </a>
+                <a href="#" class="saved-item">
+                    <div class="saved-info"><h4>Seoul Food &amp; Culture: 7 Days</h4><span class="meta">by @seoulmate_travel &middot; 890 saves</span></div>
+                    <span class="saved-type type-itin">Itin</span>
+                </a>
+                <a href="#" class="saved-item">
+                    <div class="saved-info"><h4>Best Onsen Towns Near Tokyo</h4><span class="meta">by @quietjourneys &middot; 1.4K saves</span></div>
+                    <span class="saved-type type-guide">Guide</span>
+                </a>
+                <a href="#" class="saved-item">
+                    <div class="saved-info"><h4>Norway Northern Lights: 5 Days</h4><span class="meta">by @arctic_wanderer &middot; 670 saves</span></div>
+                    <span class="saved-type type-itin">Itin</span>
+                </a>
+            </div>
+            <div class="bot-right">
+                <div class="sf-label">See What's Trending</div>
+                <div class="trend-pills">
+                    <a href="#" class="tpill active">All</a>
+                    <a href="#" class="tpill">Itineraries</a>
+                    <a href="#" class="tpill">Guides</a>
+                    <a href="#" class="tpill">Destinations</a>
+                </div>
+                <a href="#" class="trend-item"><span class="trend-num">1</span><div><h4>Lisbon, Portugal</h4><span>342 itineraries</span></div><span class="trend-type tp-dest">Dest</span></a>
+                <a href="#" class="trend-item"><span class="trend-num">2</span><div><h4>Seoul Food: 7 Days</h4><span>890 saves</span></div><span class="trend-type tp-itin">Itin</span></a>
+                <a href="#" class="trend-item"><span class="trend-num">3</span><div><h4>48 Hrs in Lisbon</h4><span>2.1K saves</span></div><span class="trend-type tp-guide">Guide</span></a>
+                <a href="#" class="trend-item"><span class="trend-num">4</span><div><h4>Lofoten, Norway</h4><span>156 itineraries</span></div><span class="trend-type tp-dest">Dest</span></a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Press</a>
+                    <a href="#">Blog</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <a href="#">Itineraries</a>
+                    <a href="#">Guides</a>
+                    <a href="#">Explore</a>
+                    <a href="#">AI Planner</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Community</h4>
+                    <a href="#">Trending</a>
+                    <a href="#">Help Center</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Feedback</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Tripscape. All rights reserved.</span>
+                <div class="footer-social">
+                    <a href="#">Twitter</a>
+                    <a href="#">Instagram</a>
+                    <a href="#">TikTok</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

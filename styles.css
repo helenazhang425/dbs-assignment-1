@@ -8,7 +8,7 @@
     --text: #1a1a1a;
     --text-light: #6b6b6b;
     --text-lighter: #999;
-    --bg: #fafafa;
+    --bg: #F5F2EB;
     --bg-alt: #f3f3f3;
     --border: #e0e0e0;
     --accent: #2563eb;
@@ -145,10 +145,6 @@ body {
 
 .iteration-grid .iteration-notes {
     font-size: 0.8rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
 .iteration-header {
