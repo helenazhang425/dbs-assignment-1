@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 04: Traveler's Notebook</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --cream: #FAF6F0;
+            --paper: #FFF9F2;
+            --leather: #6B3A2A;
+            --leather-light: #8B5A3E;
+            --ink: #2C1810;
+            --ink-light: #6B5B4F;
+            --stamp: #B83230;
+            --stamp-faded: #D4726F;
+            --sky: #5B8FA8;
+            --gold: #C49B3C;
+            --border: #E0D5C8;
+            --tape: rgba(255, 235, 180, 0.7);
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: var(--ink);
+            background: var(--cream);
+            /* Subtle paper texture via repeating gradient */
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 28px,
+                    rgba(0,0,0,0.015) 28px,
+                    rgba(0,0,0,0.015) 29px
+                );
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .back-link {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            color: var(--ink-light);
+            text-decoration: none;
+            background: var(--paper);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            z-index: 200;
+        }
+
+        .back-link:hover { color: var(--leather); }
+
+        /* ---- Nav ---- */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2.5rem;
+            background: var(--paper);
+            border-bottom: 2px solid var(--leather);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .logo-icon { width: 34px; height: 34px; }
+
+        .logo-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--leather);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--ink-light);
+            font-family: -apple-system, sans-serif;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--leather); }
+        .nav-links a.active { color: var(--leather); font-weight: 600; }
+
+        .nav-ai {
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            padding: 0.35rem 0.75rem;
+            border: 1.5px solid var(--gold);
+            border-radius: 4px;
+            color: var(--gold) !important;
+        }
+
+        .nav-ai:hover {
+            background: var(--gold);
+            color: var(--paper) !important;
+        }
+
+        .nav-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--leather);
+            color: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* ---- Hero ---- */
+        .hero {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 3.5rem 2.5rem 2rem;
+        }
+
+        .hero-greeting {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--ink-light);
+            margin-bottom: 0.4rem;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: var(--leather);
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            color: var(--ink-light);
+            font-size: 1.05rem;
+            max-width: 500px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.7rem 1.4rem;
+            border-radius: 5px;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--leather);
+            color: var(--cream);
+        }
+
+        .btn-primary:hover { background: var(--leather-light); }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--leather);
+            border: 1.5px solid var(--leather);
+        }
+
+        .btn-secondary:hover { background: var(--leather); color: var(--cream); }
+
+        /* ---- Stats Bar ---- */
+        .stats-bar {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 2.5rem 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--leather);
+            font-family: -apple-system, sans-serif;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--ink-light);
+        }
+
+        /* ---- Itineraries ---- */
+        .itineraries {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 2.5rem 2.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .section-header a {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            color: var(--leather);
+            text-decoration: none;
+        }
+
+        .section-header a:hover { text-decoration: underline; }
+
+        .itinerary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        .itinerary-card {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .itinerary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(44, 24, 16, 0.1);
+        }
+
+        /* Photo placeholders using CSS gradients */
+        .itinerary-photo {
+            height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .itinerary-photo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(transparent, rgba(44, 24, 16, 0.3));
+        }
+
+        .photo-tokyo {
+            background: linear-gradient(135deg, #FFB7C5 0%, #FF8FA3 30%, #C4A4CC 60%, #7B6F8E 100%);
+        }
+
+        .photo-patagonia {
+            background: linear-gradient(135deg, #87CEEB 0%, #4A90A4 30%, #6B8E73 50%, #8B7355 80%, #D4C5A9 100%);
+        }
+
+        .photo-iceland {
+            background: linear-gradient(135deg, #6FB1C7 0%, #94D1BE 30%, #3A5F3A 55%, #1A2F1A 100%);
+        }
+
+        .photo-berlin {
+            background: linear-gradient(135deg, #D4A574 0%, #BF8C5C 30%, #8B6F47 55%, #4A4A4A 100%);
+        }
+
+        .photo-location {
+            position: absolute;
+            bottom: 8px;
+            left: 10px;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.7rem;
+            color: #fff;
+            font-weight: 600;
+            z-index: 1;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        .itinerary-body {
+            padding: 0.85rem;
+        }
+
+        .itinerary-body h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            line-height: 1.3;
+        }
+
+        .itinerary-meta {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.75rem;
+            color: var(--ink-light);
+        }
+
+        .itinerary-date {
+            display: inline-block;
+            margin-top: 0.4rem;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.15rem 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--ink-light);
+        }
+
+        /* ---- World Map Section ---- */
+        .map-section {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 2.5rem 2.5rem;
+        }
+
+        .map-card {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .map-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .map-top h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .map-top-stats {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .map-stat {
+            text-align: center;
+        }
+
+        .map-stat-num {
+            font-family: -apple-system, sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--leather);
+            display: block;
+            line-height: 1;
+        }
+
+        .map-stat-label {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.65rem;
+            color: var(--ink-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .donut-small {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: conic-gradient(var(--leather) 0deg 75.6deg, var(--border) 75.6deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .donut-small-inner {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--paper);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--leather);
+        }
+
+        .map-body {
+            padding: 1rem 1.5rem;
+            background: #F2EDE6;
+        }
+
+        .map-body svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .map-body svg .water {
+            fill: #DDD7CC;
+        }
+
+        .map-body svg .land {
+            fill: #C8BFB2;
+            stroke: #B0A898;
+            stroke-width: 0.4;
+        }
+
+        .map-body svg .visited {
+            fill: var(--leather);
+            stroke: var(--leather-light);
+        }
+
+        .map-body svg .visited:hover {
+            fill: var(--stamp);
+        }
+
+        .map-bottom {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .continents-grid {
+            display: grid;
+            grid-template-columns: repeat(4, auto);
+            gap: 0.15rem 1.5rem;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.78rem;
+        }
+
+        .continent-row {
+            color: var(--ink-light);
+        }
+
+        .continent-row strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .continent-visited {
+            color: var(--leather);
+            font-weight: 700;
+        }
+
+        .add-places-btn {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--leather);
+            text-decoration: none;
+            padding: 0.4rem 0.85rem;
+            border: 1.5px solid var(--leather);
+            border-radius: 4px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .add-places-btn:hover {
+            background: var(--leather);
+            color: var(--cream);
+        }
+
+        /* ---- Guides ---- */
+        .guides {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 2.5rem 2.5rem;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+
+        .guide-card {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(44, 24, 16, 0.08);
+        }
+
+        .guide-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+        }
+
+        .guide-card p {
+            font-size: 0.82rem;
+            color: var(--ink-light);
+            line-height: 1.55;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-tags {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .guide-tag {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+            color: var(--ink-light);
+        }
+
+        /* ---- AI Banner (discreet) ---- */
+        .ai-subtle {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 2.5rem 2.5rem;
+        }
+
+        .ai-subtle-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: var(--paper);
+            border: 1px dashed var(--gold);
+            border-radius: 4px;
+        }
+
+        .ai-subtle-text {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .ai-icon {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.3rem 0.5rem;
+            background: var(--gold);
+            color: var(--paper);
+            border-radius: 3px;
+        }
+
+        .ai-subtle-text p {
+            font-size: 0.88rem;
+            color: var(--ink-light);
+        }
+
+        .ai-subtle-text p strong {
+            color: var(--ink);
+        }
+
+        .ai-try-link {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .ai-try-link:hover { text-decoration: underline; }
+
+        /* ---- Explore ---- */
+        .explore {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 2.5rem 3rem;
+        }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+
+        .explore-card {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1.25rem;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .explore-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--leather);
+        }
+
+        .explore-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .explore-card h4 {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .explore-card p {
+            font-size: 0.78rem;
+            color: var(--ink-light);
+        }
+
+        /* ---- Footer ---- */
+        footer {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            font-size: 0.8rem;
+            color: var(--ink-light);
+            border-top: 2px solid var(--leather);
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 900px) {
+            .itinerary-grid { grid-template-columns: repeat(2, 1fr); }
+            .guide-grid { grid-template-columns: 1fr; }
+            .explore-grid { grid-template-columns: 1fr; }
+            .continents-grid { grid-template-columns: repeat(2, auto); }
+            .map-top { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 1rem 1.5rem; }
+            .nav-links { gap: 1rem; }
+            .hero { padding: 2.5rem 1.5rem 1.5rem; }
+            .hero h1 { font-size: 2rem; }
+            .itinerary-grid { grid-template-columns: 1fr; }
+            .itineraries, .map-section, .guides, .ai-subtle, .explore, .stats-bar { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .stats-bar { flex-wrap: wrap; gap: 1rem; }
+            .hero-actions { flex-direction: column; }
+            .ai-subtle-card { flex-direction: column; gap: 0.75rem; text-align: center; }
+            .map-bottom { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; All iterations</a>
+
+    <!-- Nav -->
+    <nav>
+        <a href="#" class="logo">
+            <!-- Globe with flight path logo -->
+            <svg class="logo-icon" viewBox="0 0 34 34" fill="none">
+                <circle cx="17" cy="17" r="15.5" stroke="#6B3A2A" stroke-width="1.5"/>
+                <!-- Globe lines -->
+                <ellipse cx="17" cy="17" rx="9" ry="15.5" stroke="#6B3A2A" stroke-width="0.8" fill="none"/>
+                <line x1="1.5" y1="12" x2="32.5" y2="12" stroke="#6B3A2A" stroke-width="0.6"/>
+                <line x1="1.5" y1="22" x2="32.5" y2="22" stroke="#6B3A2A" stroke-width="0.6"/>
+                <!-- Airplane -->
+                <path d="M24 8 L26 7 L27 8 L25 10 L28 12 L27 13 L24 11 L22 13 L21 12Z" fill="#B83230"/>
+                <!-- Flight path arc -->
+                <path d="M8 24 Q14 14, 24 8" stroke="#B83230" stroke-width="0.8" fill="none" stroke-dasharray="2,2"/>
+            </svg>
+            <span class="logo-text">Tripscape</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Dashboard</a></li>
+            <li><a href="#">My Trips</a></li>
+            <li><a href="#">Guides</a></li>
+            <li><a href="#">Explore</a></li>
+            <li><a href="#" class="nav-ai">AI Planner</a></li>
+            <li>
+                <div class="nav-avatar">HZ</div>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <p class="hero-greeting">Welcome back, Helena</p>
+        <h1>Where to next?</h1>
+        <p>Plan every stop, save every detail, and keep your adventures organized in one place.</p>
+        <div class="hero-actions">
+            <a href="#" class="btn btn-primary">+ Create New Itinerary</a>
+            <a href="#" class="btn btn-secondary">+ Write a Guide</a>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-number">41</span>
+            <span class="stat-label">countries</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">6</span>
+            <span class="stat-label">continents</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">23</span>
+            <span class="stat-label">national parks</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">7</span>
+            <span class="stat-label">itineraries</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">3</span>
+            <span class="stat-label">guides written</span>
+        </div>
+    </div>
+
+    <!-- My Itineraries -->
+    <section class="itineraries">
+        <div class="section-header">
+            <h2>My Itineraries</h2>
+            <a href="#">View all &rarr;</a>
+        </div>
+        <div class="itinerary-grid">
+            <a href="#" class="itinerary-card">
+                <div class="itinerary-photo photo-tokyo">
+                    <span class="photo-location">Tokyo, Japan</span>
+                </div>
+                <div class="itinerary-body">
+                    <h3>Tokyo &amp; Kyoto</h3>
+                    <span class="itinerary-meta">10 days &middot; 14 stops</span>
+                    <span class="itinerary-date">Apr 2025</span>
+                </div>
+            </a>
+            <a href="#" class="itinerary-card">
+                <div class="itinerary-photo photo-patagonia">
+                    <span class="photo-location">Torres del Paine, Chile</span>
+                </div>
+                <div class="itinerary-body">
+                    <h3>Patagonia Trek</h3>
+                    <span class="itinerary-meta">14 days &middot; 8 stops</span>
+                    <span class="itinerary-date">Jan 2025</span>
+                </div>
+            </a>
+            <a href="#" class="itinerary-card">
+                <div class="itinerary-photo photo-iceland">
+                    <span class="photo-location">Kirkjufell, Iceland</span>
+                </div>
+                <div class="itinerary-body">
+                    <h3>Iceland Ring Road</h3>
+                    <span class="itinerary-meta">8 days &middot; 22 stops</span>
+                    <span class="itinerary-date">Aug 2024</span>
+                </div>
+            </a>
+            <a href="#" class="itinerary-card">
+                <div class="itinerary-photo photo-berlin">
+                    <span class="photo-location">Brandenburg Gate, Berlin</span>
+                </div>
+                <div class="itinerary-body">
+                    <h3>Berlin Marathon</h3>
+                    <span class="itinerary-meta">5 days &middot; 9 stops</span>
+                    <span class="itinerary-date">Sep 2025</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- World Map — full width horizontal -->
+    <section class="map-section">
+        <div class="map-card">
+            <div class="map-top">
+                <h2>Places Traveled</h2>
+                <div class="map-top-stats">
+                    <div class="donut-small">
+                        <div class="donut-small-inner">21%</div>
+                    </div>
+                    <div class="map-stat">
+                        <span class="map-stat-num">41</span>
+                        <span class="map-stat-label">Countries</span>
+                    </div>
+                    <div class="map-stat">
+                        <span class="map-stat-num">6</span>
+                        <span class="map-stat-label">Continents</span>
+                    </div>
+                    <div class="map-stat">
+                        <span class="map-stat-num">87</span>
+                        <span class="map-stat-label">Cities</span>
+                    </div>
+                </div>
+            </div>
+            <div class="map-body">
+                <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="water" x="0" y="0" width="1200" height="600"/>
+
+                    <!-- NORTH AMERICA -->
+                    <!-- Alaska -->
+                    <path class="land visited" d="M80,70 L110,55 L140,58 L155,72 L145,88 L120,95 L95,92 L78,82Z"/>
+                    <!-- Canada -->
+                    <path class="land visited" d="M140,52 L200,38 L260,35 L310,42 L330,58 L318,78 L295,88 L260,92 L220,85 L180,78 L150,72Z"/>
+                    <!-- Canadian Arctic -->
+                    <path class="land" d="M190,18 L240,12 L290,18 L310,32 L280,38 L240,35 L200,30Z"/>
+                    <!-- Greenland -->
+                    <path class="land" d="M340,15 L380,8 L410,22 L415,55 L400,72 L370,75 L348,60 L338,38Z"/>
+                    <!-- USA -->
+                    <path class="land visited" d="M150,92 L210,85 L260,90 L300,98 L315,112 L310,138 L295,155 L270,168 L245,175 L220,172 L195,162 L170,148 L155,128 L148,108Z"/>
+                    <!-- Mexico -->
+                    <path class="land visited" d="M155,162 L195,160 L215,172 L225,195 L215,215 L198,225 L178,222 L162,210 L148,195 L145,178Z"/>
+                    <!-- Central America -->
+                    <path class="land" d="M198,225 L218,218 L232,235 L225,258 L212,268 L198,262 L188,245Z"/>
+                    <!-- Cuba -->
+                    <path class="land" d="M228,198 L262,192 L275,202 L265,212 L238,215 L225,208Z"/>
+                    <!-- Caribbean small -->
+                    <path class="land" d="M275,208 L290,205 L295,218 L285,225 L272,220Z"/>
+
+                    <!-- SOUTH AMERICA -->
+                    <!-- Colombia -->
+                    <path class="land" d="M215,268 L245,262 L268,275 L272,298 L255,308 L235,305 L218,292Z"/>
+                    <!-- Venezuela -->
+                    <path class="land" d="M248,258 L280,252 L298,265 L295,282 L272,290 L255,285 L248,272Z"/>
+                    <!-- Guianas -->
+                    <path class="land" d="M298,260 L318,255 L325,272 L315,282 L300,278Z"/>
+                    <!-- Ecuador -->
+                    <path class="land" d="M208,298 L228,295 L235,312 L222,322 L208,318Z"/>
+                    <!-- Peru -->
+                    <path class="land visited" d="M212,318 L238,312 L248,335 L245,362 L228,375 L210,368 L202,345Z"/>
+                    <!-- Brazil -->
+                    <path class="land" d="M268,288 L318,278 L345,298 L355,332 L350,368 L330,398 L305,415 L275,408 L255,388 L248,358 L252,322 L260,302Z"/>
+                    <!-- Bolivia -->
+                    <path class="land" d="M260,358 L285,352 L295,375 L282,392 L262,388 L255,372Z"/>
+                    <!-- Paraguay -->
+                    <path class="land" d="M295,378 L315,372 L322,392 L310,402 L295,398Z"/>
+                    <!-- Chile -->
+                    <path class="land visited" d="M240,382 L255,378 L260,408 L258,438 L252,468 L245,488 L238,495 L232,478 L235,448 L235,415Z"/>
+                    <!-- Argentina -->
+                    <path class="land visited" d="M258,392 L290,385 L308,405 L312,432 L302,462 L285,482 L265,488 L252,472 L255,440 L258,415Z"/>
+                    <!-- Uruguay -->
+                    <path class="land" d="M310,408 L322,402 L328,418 L320,428 L308,425Z"/>
+
+                    <!-- EUROPE -->
+                    <!-- Iceland -->
+                    <path class="land visited" d="M442,58 L468,50 L488,58 L485,72 L465,78 L445,72Z"/>
+                    <!-- Ireland -->
+                    <path class="land visited" d="M460,102 L472,98 L478,112 L470,122 L458,118Z"/>
+                    <!-- UK -->
+                    <path class="land visited" d="M475,92 L490,85 L498,100 L495,118 L488,128 L478,125 L475,108Z"/>
+                    <!-- Norway -->
+                    <path class="land visited" d="M510,38 L522,30 L535,35 L540,58 L545,78 L538,95 L528,88 L518,68 L512,52Z"/>
+                    <!-- Sweden -->
+                    <path class="land visited" d="M528,42 L542,38 L548,55 L552,78 L548,95 L538,98 L530,82 L525,60Z"/>
+                    <!-- Finland -->
+                    <path class="land" d="M548,32 L565,28 L575,48 L572,72 L565,88 L555,82 L550,58Z"/>
+                    <!-- Denmark -->
+                    <path class="land visited" d="M510,92 L522,88 L525,100 L518,108 L508,105Z"/>
+                    <!-- Netherlands/Belgium -->
+                    <path class="land visited" d="M498,108 L510,105 L515,115 L508,122 L498,118Z"/>
+                    <!-- France -->
+                    <path class="land visited" d="M480,125 L505,118 L518,128 L515,148 L502,158 L485,155 L475,142Z"/>
+                    <!-- Spain -->
+                    <path class="land visited" d="M465,155 L498,150 L510,162 L505,180 L488,188 L468,185 L458,172Z"/>
+                    <!-- Portugal -->
+                    <path class="land visited" d="M452,162 L462,158 L465,178 L460,188 L450,185 L448,172Z"/>
+                    <!-- Germany -->
+                    <path class="land visited" d="M510,98 L535,92 L545,108 L540,125 L525,132 L512,128 L505,112Z"/>
+                    <!-- Poland -->
+                    <path class="land visited" d="M538,88 L565,82 L578,98 L572,118 L558,122 L542,115 L538,102Z"/>
+                    <!-- Czech Republic -->
+                    <path class="land visited" d="M530,118 L548,115 L555,125 L548,132 L532,130Z"/>
+                    <!-- Austria -->
+                    <path class="land visited" d="M522,130 L542,128 L550,135 L545,142 L528,142 L520,138Z"/>
+                    <!-- Switzerland -->
+                    <path class="land visited" d="M500,135 L518,132 L522,142 L512,148 L500,145Z"/>
+                    <!-- Italy -->
+                    <path class="land visited" d="M510,148 L528,142 L538,155 L542,172 L535,188 L525,185 L518,170 L512,158Z"/>
+                    <!-- Sicily -->
+                    <path class="land visited" d="M525,190 L538,188 L540,198 L530,200Z"/>
+                    <!-- Sardinia -->
+                    <path class="land" d="M508,172 L515,170 L518,182 L512,185Z"/>
+                    <!-- Hungary -->
+                    <path class="land visited" d="M548,128 L568,125 L575,135 L568,145 L550,142Z"/>
+                    <!-- Romania -->
+                    <path class="land" d="M568,120 L592,115 L600,128 L595,142 L578,145 L570,135Z"/>
+                    <!-- Bulgaria -->
+                    <path class="land" d="M578,145 L598,142 L605,155 L598,165 L580,162Z"/>
+                    <!-- Greece -->
+                    <path class="land visited" d="M568,158 L585,155 L592,168 L588,182 L578,185 L568,178 L565,168Z"/>
+                    <!-- Croatia/Slovenia -->
+                    <path class="land visited" d="M535,138 L552,135 L558,148 L548,155 L535,150Z"/>
+                    <!-- Serbia/Bosnia -->
+                    <path class="land" d="M555,142 L572,138 L580,152 L572,162 L558,158 L552,150Z"/>
+                    <!-- Baltic states -->
+                    <path class="land" d="M558,72 L575,68 L582,82 L578,95 L565,92 L558,82Z"/>
+                    <!-- Belarus -->
+                    <path class="land" d="M575,82 L598,78 L608,92 L602,108 L585,112 L575,100Z"/>
+                    <!-- Ukraine -->
+                    <path class="land" d="M585,108 L620,100 L640,112 L638,132 L618,142 L598,138 L588,125Z"/>
+
+                    <!-- RUSSIA -->
+                    <path class="land" d="M590,22 L680,12 L780,18 L860,28 L940,35 L980,52 L985,78 L960,88 L920,82 L860,72 L800,68 L740,65 L680,62 L640,68 L610,72 L585,65 L578,42Z"/>
+                    <!-- Russia Far East -->
+                    <path class="land" d="M940,32 L1000,22 L1040,32 L1060,55 L1050,78 L1020,85 L990,78 L970,62Z"/>
+
+                    <!-- AFRICA -->
+                    <!-- Morocco -->
+                    <path class="land visited" d="M455,195 L480,190 L490,205 L482,220 L462,222 L450,212Z"/>
+                    <!-- Algeria -->
+                    <path class="land" d="M480,192 L520,185 L538,200 L532,225 L510,235 L488,232 L480,215Z"/>
+                    <!-- Tunisia -->
+                    <path class="land" d="M520,182 L532,178 L538,195 L530,205 L520,200Z"/>
+                    <!-- Libya -->
+                    <path class="land" d="M535,195 L572,188 L585,208 L580,238 L560,248 L538,245 L530,225Z"/>
+                    <!-- Egypt -->
+                    <path class="land visited" d="M578,192 L608,185 L618,205 L615,232 L598,242 L580,238 L575,215Z"/>
+                    <!-- Mauritania/Mali -->
+                    <path class="land" d="M445,232 L490,228 L500,255 L490,278 L460,282 L440,268 L438,248Z"/>
+                    <!-- Niger/Chad -->
+                    <path class="land" d="M498,248 L545,242 L558,262 L552,288 L530,298 L505,295 L495,275Z"/>
+                    <!-- Nigeria -->
+                    <path class="land" d="M490,285 L515,280 L525,302 L515,318 L495,322 L485,308Z"/>
+                    <!-- West Africa coast -->
+                    <path class="land" d="M438,272 L465,268 L478,290 L470,312 L452,318 L438,305Z"/>
+                    <!-- Cameroon/Gabon -->
+                    <path class="land" d="M518,310 L540,305 L548,328 L540,348 L522,352 L515,335Z"/>
+                    <!-- Congo -->
+                    <path class="land" d="M540,328 L568,322 L578,348 L572,372 L552,378 L538,368 L535,348Z"/>
+                    <!-- Sudan -->
+                    <path class="land" d="M588,238 L620,232 L632,255 L628,282 L610,292 L590,288 L582,265Z"/>
+                    <!-- Ethiopia -->
+                    <path class="land" d="M618,278 L645,272 L658,292 L648,312 L628,315 L615,302Z"/>
+                    <!-- Somalia -->
+                    <path class="land" d="M650,282 L672,275 L678,298 L668,318 L652,315 L648,298Z"/>
+                    <!-- Kenya -->
+                    <path class="land visited" d="M628,312 L650,308 L658,328 L648,348 L632,348 L622,335Z"/>
+                    <!-- Tanzania -->
+                    <path class="land visited" d="M620,345 L648,340 L658,365 L648,388 L628,392 L618,375Z"/>
+                    <!-- DR Congo -->
+                    <path class="land" d="M568,348 L598,342 L612,365 L608,392 L588,402 L568,398 L560,375Z"/>
+                    <!-- Angola -->
+                    <path class="land" d="M528,382 L558,378 L565,405 L558,428 L538,432 L525,418 L522,398Z"/>
+                    <!-- Zambia -->
+                    <path class="land" d="M572,395 L598,390 L608,412 L600,432 L580,435 L568,420Z"/>
+                    <!-- Mozambique -->
+                    <path class="land" d="M612,398 L632,392 L638,418 L632,445 L618,448 L608,435Z"/>
+                    <!-- Zimbabwe -->
+                    <path class="land" d="M590,430 L612,425 L618,445 L610,458 L592,458 L585,445Z"/>
+                    <!-- South Africa -->
+                    <path class="land visited" d="M555,455 L598,448 L618,458 L628,478 L618,500 L595,510 L568,505 L548,492 L545,472Z"/>
+                    <!-- Namibia/Botswana -->
+                    <path class="land" d="M535,435 L565,430 L578,448 L572,468 L555,475 L538,468 L530,452Z"/>
+                    <!-- Madagascar -->
+                    <path class="land" d="M652,412 L665,405 L672,435 L665,462 L655,465 L648,440Z"/>
+
+                    <!-- MIDDLE EAST -->
+                    <!-- Turkey -->
+                    <path class="land visited" d="M590,148 L632,140 L658,150 L655,168 L635,178 L608,175 L592,168Z"/>
+                    <!-- Syria/Iraq -->
+                    <path class="land" d="M632,168 L665,162 L678,180 L672,202 L652,208 L635,205 L628,188Z"/>
+                    <!-- Saudi Arabia -->
+                    <path class="land" d="M628,208 L668,198 L688,218 L685,252 L665,268 L640,265 L625,248 L622,225Z"/>
+                    <!-- Iran -->
+                    <path class="land" d="M668,155 L708,148 L725,168 L722,198 L702,208 L678,205 L668,185Z"/>
+                    <!-- Yemen/Oman -->
+                    <path class="land" d="M658,262 L690,255 L705,268 L698,285 L678,288 L660,278Z"/>
+                    <!-- UAE/Qatar -->
+                    <path class="land visited" d="M688,235 L705,232 L712,248 L705,258 L690,255Z"/>
+                    <!-- Israel/Jordan -->
+                    <path class="land visited" d="M598,180 L615,175 L622,195 L618,215 L605,218 L598,205Z"/>
+
+                    <!-- CENTRAL ASIA -->
+                    <path class="land" d="M680,100 L730,92 L758,108 L752,132 L728,142 L698,138 L680,125Z"/>
+
+                    <!-- SOUTH ASIA -->
+                    <!-- Pakistan -->
+                    <path class="land" d="M720,170 L745,162 L758,182 L752,208 L738,215 L722,210 L715,192Z"/>
+                    <!-- India -->
+                    <path class="land visited" d="M728,208 L762,198 L780,218 L785,252 L775,282 L755,298 L738,290 L725,268 L720,240Z"/>
+                    <!-- Sri Lanka -->
+                    <path class="land" d="M762,302 L772,298 L775,315 L768,322 L760,318Z"/>
+                    <!-- Nepal -->
+                    <path class="land" d="M755,195 L778,190 L785,202 L775,210 L758,208Z"/>
+
+                    <!-- EAST ASIA -->
+                    <!-- China -->
+                    <path class="land visited" d="M765,92 L830,78 L880,92 L905,118 L898,152 L875,172 L845,178 L815,175 L790,165 L775,148 L765,125Z"/>
+                    <!-- Mongolia -->
+                    <path class="land" d="M790,65 L850,55 L895,68 L900,85 L878,92 L835,88 L798,82Z"/>
+                    <!-- North Korea -->
+                    <path class="land" d="M905,112 L918,108 L925,122 L918,132 L908,128Z"/>
+                    <!-- South Korea -->
+                    <path class="land visited" d="M912,130 L925,125 L930,142 L922,152 L912,148Z"/>
+                    <!-- Japan main -->
+                    <path class="land visited" d="M935,102 L948,95 L955,112 L952,135 L945,152 L938,158 L932,142 L930,118Z"/>
+                    <!-- Hokkaido -->
+                    <path class="land visited" d="M940,85 L952,80 L958,92 L950,100 L940,98Z"/>
+                    <!-- Taiwan -->
+                    <path class="land" d="M895,175 L905,170 L908,185 L900,192Z"/>
+
+                    <!-- SOUTHEAST ASIA -->
+                    <!-- Myanmar -->
+                    <path class="land" d="M798,185 L815,180 L822,202 L818,225 L808,235 L798,228 L792,208Z"/>
+                    <!-- Thailand -->
+                    <path class="land visited" d="M815,215 L832,210 L840,232 L835,258 L825,268 L815,262 L810,240Z"/>
+                    <!-- Vietnam -->
+                    <path class="land visited" d="M838,205 L852,200 L860,222 L858,252 L848,268 L838,262 L832,238Z"/>
+                    <!-- Cambodia/Laos -->
+                    <path class="land" d="M830,238 L845,235 L850,255 L842,265 L830,262Z"/>
+                    <!-- Malaysia peninsula -->
+                    <path class="land" d="M822,272 L832,268 L838,288 L832,302 L822,298Z"/>
+                    <!-- Philippines -->
+                    <path class="land" d="M895,198 L910,192 L918,215 L912,238 L900,242 L892,225Z"/>
+                    <!-- Borneo -->
+                    <path class="land" d="M855,278 L878,272 L888,292 L880,308 L862,312 L852,298Z"/>
+                    <!-- Sumatra -->
+                    <path class="land" d="M812,302 L830,295 L838,318 L828,338 L815,335 L808,318Z"/>
+                    <!-- Java -->
+                    <path class="land visited" d="M838,338 L872,332 L885,342 L878,352 L848,355 L835,348Z"/>
+                    <!-- Sulawesi -->
+                    <path class="land" d="M882,305 L895,300 L902,318 L895,332 L882,328Z"/>
+                    <!-- Papua -->
+                    <path class="land" d="M920,298 L955,290 L972,308 L965,328 L942,335 L925,325 L918,312Z"/>
+
+                    <!-- AUSTRALIA -->
+                    <path class="land" d="M888,378 L945,362 L990,378 L1008,408 L1000,445 L975,465 L940,472 L908,462 L885,438 L878,408Z"/>
+                    <!-- Tasmania -->
+                    <path class="land" d="M960,475 L972,470 L978,485 L970,492 L960,488Z"/>
+                    <!-- New Zealand North -->
+                    <path class="land" d="M1025,445 L1035,438 L1042,458 L1035,472 L1025,468Z"/>
+                    <!-- New Zealand South -->
+                    <path class="land" d="M1018,472 L1032,468 L1038,488 L1030,502 L1018,498Z"/>
+                </svg>
+            </div>
+            <div class="map-bottom">
+                <div class="continents-grid">
+                    <span class="continent-row"><strong>Africa:</strong> <span class="continent-visited">5</span>/54</span>
+                    <span class="continent-row"><strong>N. America:</strong> <span class="continent-visited">3</span>/23</span>
+                    <span class="continent-row"><strong>Antarctica:</strong> <span class="continent-visited">0</span>/2</span>
+                    <span class="continent-row"><strong>Asia:</strong> <span class="continent-visited">8</span>/48</span>
+                    <span class="continent-row"><strong>Oceania:</strong> <span class="continent-visited">1</span>/14</span>
+                    <span class="continent-row"><strong>Europe:</strong> <span class="continent-visited">20</span>/46</span>
+                    <span class="continent-row"><strong>S. America:</strong> <span class="continent-visited">4</span>/12</span>
+                </div>
+                <a href="#" class="add-places-btn">+ Add visited places</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guides -->
+    <section class="guides">
+        <div class="section-header">
+            <h2>My Guides</h2>
+            <a href="#">View all &rarr;</a>
+        </div>
+        <div class="guide-grid">
+            <a href="#" class="guide-card">
+                <h3>The Perfect 3 Days in Kyoto</h3>
+                <p>Temples, tea ceremonies, and hidden gardens — a curated guide for first-timers visiting Japan's cultural capital.</p>
+                <div class="guide-tags">
+                    <span class="guide-tag">Japan</span>
+                    <span class="guide-tag">Culture</span>
+                    <span class="guide-tag">3 Days</span>
+                </div>
+            </a>
+            <a href="#" class="guide-card">
+                <h3>Hiking the W Trek</h3>
+                <p>Gear, timing, refugios, and the honest truth about Patagonia's most famous multi-day route.</p>
+                <div class="guide-tags">
+                    <span class="guide-tag">Chile</span>
+                    <span class="guide-tag">Hiking</span>
+                    <span class="guide-tag">Adventure</span>
+                </div>
+            </a>
+            <a href="#" class="guide-card">
+                <h3>NYC Marathon as a Tourist</h3>
+                <p>How to balance race prep with actually enjoying the city — from expo to finish line to recovery brunch.</p>
+                <div class="guide-tags">
+                    <span class="guide-tag">NYC</span>
+                    <span class="guide-tag">Running</span>
+                    <span class="guide-tag">Weekend</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- AI Planner — discreet -->
+    <section class="ai-subtle">
+        <div class="ai-subtle-card">
+            <div class="ai-subtle-text">
+                <span class="ai-icon">Pro</span>
+                <p><strong>AI Trip Planner</strong> — Let AI build your next itinerary. Tell it your destination and dates, get a full day-by-day plan.</p>
+            </div>
+            <a href="#" class="ai-try-link">Try it free &rarr;</a>
+        </div>
+    </section>
+
+    <!-- Explore -->
+    <section class="explore">
+        <div class="section-header">
+            <h2>Explore</h2>
+            <a href="#">Browse all &rarr;</a>
+        </div>
+        <div class="explore-grid">
+            <a href="#" class="explore-card">
+                <div class="explore-icon">&#128506;</div>
+                <h4>Community Itineraries</h4>
+                <p>Discover trip plans from travelers worldwide</p>
+            </a>
+            <a href="#" class="explore-card">
+                <div class="explore-icon">&#128218;</div>
+                <h4>Travel Guides</h4>
+                <p>Insider tips and local knowledge for any destination</p>
+            </a>
+            <a href="#" class="explore-card">
+                <div class="explore-icon">&#127757;</div>
+                <h4>Destinations</h4>
+                <p>Browse by country, city, or experience type</p>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Tripscape</p>
+    </footer>
+</body>
+</html>
