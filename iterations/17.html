@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripscape — Iteration 17: Sakura &amp; Bamboo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #2A1A28;
+            min-height: 100vh;
+            background: #FDF8F4;
+        }
+
+        .back-link {
+            position: fixed; bottom: 1rem; right: 1rem; font-size: 0.68rem;
+            color: #A88A90; text-decoration: none; background: rgba(255,255,255,0.9);
+            padding: 0.3rem 0.6rem; border: 1px solid #E0C8CC; z-index: 300;
+            font-family: -apple-system, sans-serif;
+        }
+
+        /* ======== SAKURA CANOPY — falling petals scene ======== */
+        .canopy {
+            position: relative;
+            min-height: 500px;
+            overflow: hidden;
+            background: linear-gradient(180deg,
+                #F8E0E8 0%,
+                #FDE8EC 20%,
+                #FFF0F2 40%,
+                #FFF8FA 60%,
+                #FFFCFD 100%
+            );
+        }
+
+        /* Cherry blossom petals — scattered CSS shapes */
+        .petal {
+            position: absolute;
+            width: 10px; height: 12px;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.6;
+        }
+
+        .petal-pink { background: #F4A0B0; }
+        .petal-light { background: #FACACD; }
+        .petal-white { background: #FFE8EC; }
+        .petal-deep { background: #E88098; }
+
+        .p1 { top: 5%; left: 8%; transform: rotate(25deg); }
+        .p2 { top: 12%; left: 22%; transform: rotate(-40deg); width: 8px; height: 10px; }
+        .p3 { top: 3%; left: 38%; transform: rotate(60deg); }
+        .p4 { top: 18%; left: 52%; transform: rotate(-15deg); width: 12px; height: 14px; }
+        .p5 { top: 8%; right: 30%; transform: rotate(45deg); }
+        .p6 { top: 22%; right: 18%; transform: rotate(-55deg); width: 8px; height: 10px; }
+        .p7 { top: 2%; right: 8%; transform: rotate(30deg); }
+        .p8 { top: 28%; left: 12%; transform: rotate(-20deg); width: 7px; height: 9px; }
+        .p9 { top: 35%; left: 42%; transform: rotate(70deg); }
+        .p10 { top: 15%; left: 65%; transform: rotate(-35deg); width: 9px; height: 11px; }
+        .p11 { top: 25%; right: 42%; transform: rotate(50deg); width: 11px; height: 13px; }
+        .p12 { top: 40%; right: 12%; transform: rotate(-10deg); }
+        .p13 { top: 32%; left: 28%; transform: rotate(40deg); width: 7px; height: 9px; }
+        .p14 { top: 45%; left: 58%; transform: rotate(-60deg); }
+        .p15 { top: 38%; right: 25%; transform: rotate(20deg); width: 8px; height: 10px; }
+        .p16 { top: 50%; left: 15%; transform: rotate(-45deg); width: 6px; height: 8px; opacity: 0.4; }
+        .p17 { top: 48%; right: 35%; transform: rotate(55deg); width: 9px; height: 11px; opacity: 0.4; }
+        .p18 { top: 55%; left: 45%; transform: rotate(-25deg); opacity: 0.3; }
+
+        /* Branch silhouettes */
+        .branch {
+            position: absolute;
+            background: #8A6070;
+            border-radius: 20px;
+            transform-origin: left center;
+        }
+
+        .br1 { top: -5px; left: -20px; width: 250px; height: 3px; transform: rotate(12deg); }
+        .br1a { top: 20px; left: 80px; width: 120px; height: 2px; transform: rotate(-8deg); }
+        .br1b { top: 8px; left: 160px; width: 80px; height: 2px; transform: rotate(20deg); }
+
+        .br2 { top: 10px; right: -30px; width: 200px; height: 3px; transform: rotate(-15deg); transform-origin: right center; }
+        .br2a { top: 30px; right: 50px; width: 100px; height: 2px; transform: rotate(10deg); transform-origin: right center; }
+
+        /* Blossom clusters on branches */
+        .blossom {
+            position: absolute;
+            border-radius: 50%;
+        }
+        .bl-lg { width: 18px; height: 18px; }
+        .bl-md { width: 13px; height: 13px; }
+        .bl-sm { width: 9px; height: 9px; }
+        .bl-pink { background: radial-gradient(circle, #FFD0D8 30%, #F4A0B0 100%); }
+        .bl-white { background: radial-gradient(circle, #FFF 30%, #FFE0E8 100%); }
+        .bl-deep { background: radial-gradient(circle, #F0C0C8 30%, #E08098 100%); }
+
+        .b1 { top: 2px; left: 60px; }
+        .b2 { top: -8px; left: 90px; }
+        .b3 { top: 10px; left: 110px; }
+        .b4 { top: -5px; left: 140px; }
+        .b5 { top: 5px; left: 175px; }
+        .b6 { top: -10px; left: 200px; }
+        .b7 { top: 15px; right: 40px; }
+        .b8 { top: 0px; right: 80px; }
+        .b9 { top: 20px; right: 100px; }
+        .b10 { top: -8px; right: 130px; }
+
+        /* Nav */
+        nav {
+            position: relative; z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.85rem 2.5rem;
+        }
+        .logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #5A3048; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; font-style: italic; }
+        /* Sakura flower logo */
+        .logo-flower { width: 30px; height: 30px; }
+
+        .nav-links { display: flex; list-style: none; gap: 1.25rem; align-items: center; }
+        .nav-links a { text-decoration: none; color: #B08898; font-family: -apple-system, sans-serif; font-size: 0.75rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #5A3048; }
+        .nav-links a.active { color: #C8506A; font-weight: 700; }
+        .nav-ai { border: 1px solid #C8A060; padding: 0.15rem 0.45rem; color: #A88040 !important; font-size: 0.6rem !important; }
+        .nav-ai:hover { background: #C8A060; color: #FFF !important; }
+        .nav-avatar { width: 26px; height: 26px; border-radius: 50%; background: #C8506A; color: #FFF; display: flex; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; font-size: 0.55rem; font-weight: 700; }
+
+        /* Hero */
+        .hero-sakura {
+            position: relative; z-index: 10;
+            text-align: center;
+            padding: 4rem 2rem 3rem;
+        }
+
+        .hero-kicker {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.58rem; letter-spacing: 4px; text-transform: uppercase;
+            color: #C8506A; margin-bottom: 0.5rem;
+        }
+
+        .hero-sakura h1 {
+            font-size: 2.8rem; font-weight: 400; line-height: 1.15;
+            color: #3A1A2A; margin-bottom: 0.4rem;
+        }
+        .hero-sakura h1 em { font-style: italic; color: #C8506A; }
+
+        .hero-sakura p {
+            font-size: 0.9rem; color: #8A6878; font-style: italic;
+            margin-bottom: 1.5rem; max-width: 420px; margin-left: auto; margin-right: auto;
+        }
+
+        .hero-btns { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+        .btn-s { padding: 0.65rem 1.5rem; font-family: -apple-system, sans-serif; font-size: 0.75rem; font-weight: 700; text-decoration: none; border-radius: 3px; transition: all 0.2s; }
+        .btn-rose { background: #C8506A; color: #FFF; border: none; }
+        .btn-rose:hover { background: #D8687E; }
+        .btn-out { background: transparent; color: #5A3048; border: 1.5px solid #D0B0B8; }
+        .btn-out:hover { background: #5A3048; color: #FFF; }
+        .btn-gold-s { background: transparent; color: #A88040; border: 1.5px dashed #C8A060; font-size: 0.68rem; }
+        .btn-gold-s:hover { background: #C8A060; color: #FFF; }
+        .pro-tag { font-size: 0.48rem; background: #C8A060; color: #FFF; padding: 0.05rem 0.2rem; margin-right: 0.1rem; font-weight: 800; font-family: -apple-system, sans-serif; }
+
+        /* ======== BAMBOO FOREST TRANSITION ======== */
+        .bamboo-border {
+            height: 60px;
+            position: relative;
+            overflow: hidden;
+            background: #E8F0E0;
+        }
+
+        /* Individual bamboo stalks */
+        .bamboo-stalk {
+            position: absolute;
+            bottom: 0;
+            background: linear-gradient(90deg, #6A9A58 0%, #88B870 40%, #78A868 60%, #6A9A58 100%);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Nodes on bamboo */
+        .bamboo-stalk::before, .bamboo-stalk::after {
+            content: '';
+            position: absolute;
+            left: -1px; right: -1px;
+            height: 3px;
+            background: #5A8A48;
+            border-radius: 1px;
+        }
+        .bamboo-stalk::before { top: 30%; }
+        .bamboo-stalk::after { top: 65%; }
+
+        .bs1 { left: 2%; width: 8px; height: 55px; }
+        .bs2 { left: 5%; width: 6px; height: 48px; }
+        .bs3 { left: 9%; width: 9px; height: 58px; }
+        .bs4 { left: 13%; width: 7px; height: 42px; }
+        .bs5 { left: 17%; width: 8px; height: 52px; }
+        .bs6 { left: 22%; width: 6px; height: 45px; }
+        .bs7 { left: 26%; width: 9px; height: 56px; }
+        .bs8 { left: 31%; width: 7px; height: 50px; }
+        .bs9 { left: 35%; width: 8px; height: 44px; }
+        .bs10 { left: 40%; width: 6px; height: 54px; }
+        .bs11 { left: 44%; width: 9px; height: 48px; }
+        .bs12 { left: 49%; width: 7px; height: 57px; }
+        .bs13 { left: 53%; width: 8px; height: 43px; }
+        .bs14 { left: 58%; width: 6px; height: 52px; }
+        .bs15 { left: 62%; width: 9px; height: 47px; }
+        .bs16 { left: 67%; width: 7px; height: 55px; }
+        .bs17 { left: 71%; width: 8px; height: 41px; }
+        .bs18 { left: 76%; width: 6px; height: 53px; }
+        .bs19 { left: 80%; width: 9px; height: 49px; }
+        .bs20 { left: 85%; width: 7px; height: 56px; }
+        .bs21 { left: 89%; width: 8px; height: 44px; }
+        .bs22 { left: 93%; width: 6px; height: 51px; }
+        .bs23 { left: 97%; width: 9px; height: 46px; }
+
+        /* Bamboo leaves */
+        .bamboo-leaf {
+            position: absolute;
+            width: 20px; height: 6px;
+            background: #78A860;
+            border-radius: 50%;
+            transform-origin: left center;
+        }
+        .bl1 { top: 5px; left: 10%; transform: rotate(-30deg); }
+        .bl2 { top: 12px; left: 14%; transform: rotate(20deg); }
+        .bl3 { top: 3px; left: 28%; transform: rotate(-45deg); }
+        .bl4 { top: 15px; left: 38%; transform: rotate(15deg); }
+        .bl5 { top: 8px; left: 50%; transform: rotate(-25deg); }
+        .bl6 { top: 2px; left: 65%; transform: rotate(35deg); }
+        .bl7 { top: 18px; left: 73%; transform: rotate(-40deg); }
+        .bl8 { top: 6px; left: 82%; transform: rotate(25deg); }
+        .bl9 { top: 14px; left: 91%; transform: rotate(-15deg); }
+
+        /* ======== MAIN — zen garden feel ======== */
+        .garden {
+            background: #FDF8F4;
+            /* Zen garden raked sand pattern */
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(200,180,170,0.08) 18px, rgba(200,180,170,0.08) 19px);
+            padding: 2rem 2.5rem 0;
+        }
+
+        .section-label {
+            font-family: -apple-system, sans-serif;
+            font-size: 0.55rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 3px; color: #C8506A;
+            margin-bottom: 0.75rem; padding-bottom: 0.3rem;
+            border-bottom: 1px solid #E0D0D4;
+            display: flex; justify-content: space-between;
+        }
+        .section-label a { font-weight: 600; letter-spacing: 1px; color: #B0A098; text-decoration: none; font-size: 0.52rem; }
+        .section-label a:hover { color: #C8506A; }
+
+        /* ---- Itineraries — hanafuda-style cards ---- */
+        .hanafuda-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .hanafuda {
+            background: #FFF;
+            border: 2px solid #E8D8DC;
+            border-radius: 10px;
+            overflow: hidden;
+            text-decoration: none; color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .hanafuda:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(90,48,72,0.1); }
+
+        /* Card scene top — nature gradient with emoji */
+        .hanafuda-scene {
+            height: 90px; display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; position: relative;
+        }
+
+        .hs-sakura { background: linear-gradient(180deg, #FFE0E8 0%, #F8C8D0 50%, #E8B0B8 100%); }
+        .hs-mountain { background: linear-gradient(180deg, #D0E8F0 0%, #A8D0D8 50%, #88B8A8 100%); }
+        .hs-water { background: linear-gradient(180deg, #C8E0F0 0%, #98C8D8 50%, #78A8B8 100%); }
+        .hs-autumn { background: linear-gradient(180deg, #F0E0C8 0%, #E8C8A0 50%, #D0A878 100%); }
+
+        /* Decorative arc at bottom of scene */
+        .hanafuda-scene::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 15px; background: #FFF;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .hanafuda-body {
+            padding: 0.5rem 0.75rem 0.75rem; text-align: center;
+        }
+        .hanafuda-body h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.05rem; }
+        .hanafuda-body .sub { font-family: -apple-system, sans-serif; font-size: 0.6rem; color: #A89098; }
+        .hanafuda-body .tag {
+            display: inline-block; margin-top: 0.25rem;
+            font-family: -apple-system, sans-serif; font-size: 0.5rem; font-weight: 600;
+            letter-spacing: 0.5px; color: #C8506A; background: #FFF0F2; padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+        }
+
+        /* ---- Guides — ink wash scroll cards ---- */
+        .scroll-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .scroll-card {
+            background: #FFF;
+            border: 1px solid #E8D8DC;
+            border-top: 4px solid #C8506A;
+            padding: 1rem;
+            text-decoration: none; color: inherit;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .scroll-card:hover { transform: translateY(-2px); }
+
+        /* Ink wash circle watermark */
+        .scroll-card::before {
+            content: '';
+            position: absolute; top: 0.6rem; right: 0.6rem;
+            width: 30px; height: 30px; border-radius: 50%;
+            border: 2px solid rgba(200,80,106,0.1);
+        }
+
+        .scroll-card h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.15rem; }
+        .scroll-card p { font-family: -apple-system, sans-serif; font-size: 0.62rem; color: #8A7A80; line-height: 1.5; }
+        .scroll-card .tags { font-family: -apple-system, sans-serif; font-size: 0.48rem; color: #C8506A; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; margin-top: 0.25rem; }
+
+        /* ---- Places Traveled ---- */
+        .places-section { margin-bottom: 2rem; }
+
+        .places-wrap {
+            background: #FFF; border: 1px solid #E8D8DC;
+            overflow: hidden; display: grid; grid-template-columns: 280px 1fr;
+        }
+
+        /* Decorative top border — cherry blossom pattern */
+        .places-wrap-outer {
+            border-top: 4px solid #C8506A;
+            position: relative;
+        }
+
+        .places-stats { padding: 1.15rem; border-right: 1px solid #F0E0E4; }
+        .places-stats .section-label { margin-bottom: 0.5rem; }
+        .ps-big { display: flex; align-items: baseline; gap: 0.35rem; margin-bottom: 0.08rem; }
+        .ps-num { font-size: 2.6rem; font-weight: 700; color: #C8506A; line-height: 1; }
+        .ps-lbl { font-family: -apple-system, sans-serif; font-size: 0.6rem; color: #A89098; }
+        .ps-pct { font-family: -apple-system, sans-serif; font-size: 0.6rem; color: #A89098; margin-bottom: 0.6rem; }
+        .ps-pct strong { color: #C8506A; }
+
+        .ps-links { display: flex; flex-direction: column; gap: 0.18rem; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: 1px solid #F0E0E4; }
+        .ps-links a { font-family: -apple-system, sans-serif; font-size: 0.62rem; color: #C8506A; text-decoration: none; }
+        .ps-links a:hover { text-decoration: underline; }
+        .cont-label { font-family: -apple-system, sans-serif; font-size: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #C0A8B0; margin-bottom: 0.2rem; }
+        .cont-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.08rem; font-family: -apple-system, sans-serif; font-size: 0.6rem; }
+        .cont-row { color: #A89098; }
+        .cont-row strong { color: #2A1A28; }
+        .cont-v { color: #C8506A; font-weight: 700; }
+        .add-link { display: inline-block; margin-top: 0.5rem; font-family: -apple-system, sans-serif; font-size: 0.55rem; font-weight: 600; color: #C8506A; text-decoration: none; border-bottom: 1px solid #C8506A; }
+
+        .places-map { padding: 0.5rem; background: #F8F0EC; display: flex; align-items: center; }
+        .places-map svg { width: 100%; max-height: 200px; }
+        .places-map svg .water { fill: #F0E8E0; }
+        .places-map svg .land { fill: #DDD4CC; stroke: #CCC4BC; stroke-width: 0.5; }
+        .places-map svg .visited { fill: #C8506A; stroke: #B04058; }
+        .places-map svg .visited:hover { fill: #5A3048; }
+
+        /* ---- Bucket List — floating wish stones ---- */
+        .stones-section { margin-bottom: 2rem; }
+        .stones-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; }
+
+        .stone {
+            background: #FFF; border: 1px solid #E8D8DC;
+            border-radius: 30px; padding: 0.85rem 0.6rem; text-align: center;
+            text-decoration: none; color: inherit;
+            transition: transform 0.2s;
+        }
+        .stone:hover { transform: translateY(-3px); }
+
+        .stone .st-emoji { font-size: 1.3rem; margin-bottom: 0.2rem; }
+        .stone h4 { font-family: -apple-system, sans-serif; font-size: 0.72rem; font-weight: 700; }
+        .stone span { font-family: -apple-system, sans-serif; font-size: 0.52rem; color: #A89098; }
+
+        /* ---- Trending ---- */
+        .trend-section { margin-bottom: 2rem; }
+        .trend-list { display: flex; gap: 1rem; }
+        .trend-item {
+            flex: 1; background: #FFF; border: 1px solid #E8D8DC;
+            display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.85rem;
+            text-decoration: none; color: inherit; transition: transform 0.2s;
+        }
+        .trend-item:hover { transform: translateY(-2px); }
+        .trend-rank { font-size: 1.2rem; font-weight: 700; color: #E8D0D4; width: 24px; }
+        .trend-item h4 { font-family: -apple-system, sans-serif; font-size: 0.75rem; font-weight: 700; }
+        .trend-item span { font-family: -apple-system, sans-serif; font-size: 0.55rem; color: #A89098; }
+
+        /* ---- AI ---- */
+        .ai-bar {
+            background: #3A1A2A; color: #A88898;
+            padding: 0.65rem 2.5rem; display: flex; justify-content: space-between; align-items: center;
+            font-family: -apple-system, sans-serif; font-size: 0.62rem;
+        }
+        .ai-bar strong { color: #C8A060; }
+        .ai-bar a { color: #C8A060; text-decoration: none; border: 1px solid #C8A060; padding: 0.18rem 0.45rem; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .ai-bar a:hover { background: #C8A060; color: #3A1A2A; }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(180deg, #3A1A2A, #2A0A1A);
+            color: #6A4858; text-align: center; padding: 1.25rem;
+            font-family: -apple-system, sans-serif; font-size: 0.55rem;
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        /* ======== RESPONSIVE ======== */
+        @media (max-width: 900px) {
+            .hanafuda-grid { grid-template-columns: repeat(2, 1fr); }
+            .scroll-grid { grid-template-columns: 1fr; }
+            .places-wrap { grid-template-columns: 1fr; }
+            .places-stats { border-right: none; border-bottom: 1px solid #F0E0E4; }
+            .stones-grid { grid-template-columns: repeat(2, 1fr); }
+            .trend-list { flex-direction: column; }
+            .branch { display: none; }
+            .blossom { display: none; }
+        }
+        @media (max-width: 600px) {
+            nav { padding: 0.75rem 1.25rem; }
+            .hero-sakura { padding: 3rem 1.25rem 2rem; }
+            .hero-sakura h1 { font-size: 1.8rem; }
+            .garden { padding: 1.5rem 1.25rem 0; }
+            .hero-btns { flex-direction: column; align-items: center; }
+            .hanafuda-grid, .stones-grid { grid-template-columns: 1fr; }
+            .ai-bar { flex-direction: column; gap: 0.4rem; text-align: center; padding: 0.65rem 1.25rem; }
+            .canopy { min-height: 380px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">&larr; Back</a>
+
+    <!-- ======== SAKURA CANOPY ======== -->
+    <div class="canopy">
+        <!-- Branches -->
+        <div class="branch br1"></div>
+        <div class="branch br1a"></div>
+        <div class="branch br1b"></div>
+        <div class="branch br2"></div>
+        <div class="branch br2a"></div>
+
+        <!-- Blossom clusters -->
+        <div class="blossom bl-pink bl-lg b1"></div>
+        <div class="blossom bl-white bl-md b2"></div>
+        <div class="blossom bl-deep bl-sm b3"></div>
+        <div class="blossom bl-pink bl-md b4"></div>
+        <div class="blossom bl-white bl-lg b5"></div>
+        <div class="blossom bl-deep bl-md b6"></div>
+        <div class="blossom bl-pink bl-lg b7"></div>
+        <div class="blossom bl-white bl-sm b8"></div>
+        <div class="blossom bl-deep bl-lg b9"></div>
+        <div class="blossom bl-pink bl-md b10"></div>
+
+        <!-- Falling petals -->
+        <div class="petal petal-pink p1"></div>
+        <div class="petal petal-light p2"></div>
+        <div class="petal petal-white p3"></div>
+        <div class="petal petal-deep p4"></div>
+        <div class="petal petal-pink p5"></div>
+        <div class="petal petal-light p6"></div>
+        <div class="petal petal-white p7"></div>
+        <div class="petal petal-deep p8"></div>
+        <div class="petal petal-pink p9"></div>
+        <div class="petal petal-light p10"></div>
+        <div class="petal petal-white p11"></div>
+        <div class="petal petal-deep p12"></div>
+        <div class="petal petal-pink p13"></div>
+        <div class="petal petal-light p14"></div>
+        <div class="petal petal-white p15"></div>
+        <div class="petal petal-pink p16"></div>
+        <div class="petal petal-light p17"></div>
+        <div class="petal petal-white p18"></div>
+
+        <!-- Nav -->
+        <nav>
+            <a href="#" class="logo">
+                <svg class="logo-flower" viewBox="0 0 30 30" fill="none">
+                    <!-- 5-petal sakura -->
+                    <circle cx="15" cy="8" r="5" fill="#F4A0B0" opacity="0.8"/>
+                    <circle cx="21" cy="13" r="5" fill="#FACACD" opacity="0.8"/>
+                    <circle cx="19" cy="21" r="5" fill="#F4A0B0" opacity="0.8"/>
+                    <circle cx="11" cy="21" r="5" fill="#FACACD" opacity="0.8"/>
+                    <circle cx="9" cy="13" r="5" fill="#F4A0B0" opacity="0.8"/>
+                    <circle cx="15" cy="15" r="3" fill="#C8506A"/>
+                </svg>
+                <span class="logo-text">Tripscape</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Trips</a></li>
+                <li><a href="#">Guides</a></li>
+                <li><a href="#">Discover</a></li>
+                <li><a href="#" class="nav-ai">AI</a></li>
+                <li><div class="nav-avatar">HZ</div></li>
+            </ul>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero-sakura">
+            <p class="hero-kicker">Welcome back, Helena</p>
+            <h1>Every path begins<br>beneath the <em>blossoms</em></h1>
+            <p>Plan your journey, share your stories, and watch your world bloom.</p>
+            <div class="hero-btns">
+                <a href="#" class="btn-s btn-rose">+ New Itinerary</a>
+                <a href="#" class="btn-s btn-out">+ Write a Guide</a>
+                <a href="#" class="btn-s btn-gold-s"><span class="pro-tag">Pro</span> AI Planner</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Bamboo forest transition -->
+    <div class="bamboo-border">
+        <div class="bamboo-stalk bs1"></div><div class="bamboo-stalk bs2"></div><div class="bamboo-stalk bs3"></div>
+        <div class="bamboo-stalk bs4"></div><div class="bamboo-stalk bs5"></div><div class="bamboo-stalk bs6"></div>
+        <div class="bamboo-stalk bs7"></div><div class="bamboo-stalk bs8"></div><div class="bamboo-stalk bs9"></div>
+        <div class="bamboo-stalk bs10"></div><div class="bamboo-stalk bs11"></div><div class="bamboo-stalk bs12"></div>
+        <div class="bamboo-stalk bs13"></div><div class="bamboo-stalk bs14"></div><div class="bamboo-stalk bs15"></div>
+        <div class="bamboo-stalk bs16"></div><div class="bamboo-stalk bs17"></div><div class="bamboo-stalk bs18"></div>
+        <div class="bamboo-stalk bs19"></div><div class="bamboo-stalk bs20"></div><div class="bamboo-stalk bs21"></div>
+        <div class="bamboo-stalk bs22"></div><div class="bamboo-stalk bs23"></div>
+        <div class="bamboo-leaf bl1"></div><div class="bamboo-leaf bl2"></div><div class="bamboo-leaf bl3"></div>
+        <div class="bamboo-leaf bl4"></div><div class="bamboo-leaf bl5"></div><div class="bamboo-leaf bl6"></div>
+        <div class="bamboo-leaf bl7"></div><div class="bamboo-leaf bl8"></div><div class="bamboo-leaf bl9"></div>
+    </div>
+
+    <!-- ======== ZEN GARDEN CONTENT ======== -->
+    <div class="garden">
+
+        <!-- Itineraries — hanafuda cards -->
+        <div class="section-label">My Itineraries <a href="#">View All &rarr;</a></div>
+        <div class="hanafuda-grid">
+            <a href="#" class="hanafuda">
+                <div class="hanafuda-scene hs-sakura">&#127983;</div>
+                <div class="hanafuda-body"><h3>Tokyo &amp; Kyoto</h3><span class="sub">14 stops</span><span class="tag">10 days &middot; Apr 2025</span></div>
+            </a>
+            <a href="#" class="hanafuda">
+                <div class="hanafuda-scene hs-mountain">&#9968;</div>
+                <div class="hanafuda-body"><h3>Patagonia Trek</h3><span class="sub">8 stops</span><span class="tag">14 days &middot; Jan 2025</span></div>
+            </a>
+            <a href="#" class="hanafuda">
+                <div class="hanafuda-scene hs-water">&#127956;</div>
+                <div class="hanafuda-body"><h3>Iceland Ring Road</h3><span class="sub">22 stops</span><span class="tag">8 days &middot; Aug 2024</span></div>
+            </a>
+            <a href="#" class="hanafuda">
+                <div class="hanafuda-scene hs-autumn">&#127939;</div>
+                <div class="hanafuda-body"><h3>Berlin Marathon</h3><span class="sub">9 stops</span><span class="tag">5 days &middot; Sep 2025</span></div>
+            </a>
+        </div>
+
+        <!-- Guides — ink wash scrolls -->
+        <div class="section-label">My Guides <a href="#">View All &rarr;</a></div>
+        <div class="scroll-grid">
+            <a href="#" class="scroll-card"><h3>The Perfect 3 Days in Kyoto</h3><p>Temples, tea ceremonies, and hidden gardens for first-timers.</p><div class="tags">Japan &middot; Culture &middot; 3 Days</div></a>
+            <a href="#" class="scroll-card"><h3>Hiking the W Trek</h3><p>Gear, timing, refugios — the honest truth about Patagonia.</p><div class="tags">Chile &middot; Hiking &middot; Adventure</div></a>
+            <a href="#" class="scroll-card"><h3>NYC Marathon as a Tourist</h3><p>Balancing race prep with enjoying the city.</p><div class="tags">NYC &middot; Running &middot; Weekend</div></a>
+        </div>
+
+        <!-- Places Traveled -->
+        <div class="places-section">
+            <div class="section-label">Places Traveled</div>
+            <div class="places-wrap-outer">
+                <div class="places-wrap">
+                    <div class="places-stats">
+                        <div class="ps-big"><span class="ps-num">41</span><span class="ps-lbl">countries<br>of 195</span></div>
+                        <div class="ps-pct"><strong>21%</strong> of the world explored</div>
+                        <div class="ps-links">
+                            <a href="#">&#9654; My Continents</a>
+                            <a href="#">&#9654; My Countries</a>
+                            <a href="#">&#9654; My Cities</a>
+                        </div>
+                        <div class="cont-label">Breakdown</div>
+                        <div class="cont-grid">
+                            <span class="cont-row"><strong>Africa:</strong> <span class="cont-v">5</span>/54</span>
+                            <span class="cont-row"><strong>N. America:</strong> <span class="cont-v">3</span>/23</span>
+                            <span class="cont-row"><strong>Asia:</strong> <span class="cont-v">8</span>/48</span>
+                            <span class="cont-row"><strong>Oceania:</strong> <span class="cont-v">1</span>/14</span>
+                            <span class="cont-row"><strong>Europe:</strong> <span class="cont-v">20</span>/46</span>
+                            <span class="cont-row"><strong>S. America:</strong> <span class="cont-v">4</span>/12</span>
+                            <span class="cont-row"><strong>Antarctica:</strong> <span class="cont-v">0</span>/2</span>
+                        </div>
+                        <a href="#" class="add-link">+ Add Places</a>
+                    </div>
+                    <div class="places-map">
+                        <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                            <rect class="water" x="0" y="0" width="1000" height="500"/>
+                            <path class="land visited" d="M100,30 L220,20 L270,50 L280,100 L270,140 L250,170 L200,180 L160,170 L130,140 L110,100 L95,60Z"/>
+                            <path class="land visited" d="M140,170 L190,168 L200,200 L185,225 L160,220 L135,200Z"/>
+                            <path class="land" d="M210,190 L240,185 L245,200 L225,205Z"/>
+                            <path class="land visited" d="M190,235 L250,225 L290,260 L300,320 L285,380 L260,410 L230,400 L210,360 L200,300 L185,260Z"/>
+                            <path class="land" d="M280,10 L320,5 L345,30 L335,60 L310,65 L280,45Z"/>
+                            <path class="land visited" d="M370,50 L392,44 L400,58 L388,65 L372,60Z"/>
+                            <path class="land visited" d="M395,80 L412,74 L418,98 L408,108 L395,100Z"/>
+                            <path class="land visited" d="M430,28 L450,20 L465,40 L468,75 L458,88 L440,80 L432,55Z"/>
+                            <path class="land visited" d="M400,100 L440,92 L455,115 L450,145 L430,155 L405,150 L395,130Z"/>
+                            <path class="land visited" d="M385,148 L415,142 L422,162 L412,175 L388,172Z"/>
+                            <path class="land visited" d="M445,80 L490,72 L510,95 L505,130 L480,138 L455,130 L448,105Z"/>
+                            <path class="land visited" d="M435,130 L465,125 L475,150 L468,172 L450,175 L435,160Z"/>
+                            <path class="land" d="M490,15 L650,5 L750,20 L780,50 L770,72 L700,62 L600,58 L530,65 L500,50Z"/>
+                            <path class="land visited" d="M480,135 L520,128 L540,140 L535,155 L510,160 L485,152Z"/>
+                            <path class="land visited" d="M375,178 L460,168 L480,185 L475,210 L440,220 L390,215 L372,198Z"/>
+                            <path class="land" d="M370,220 L420,225 L430,260 L415,285 L385,280 L368,255Z"/>
+                            <path class="land visited" d="M440,225 L500,218 L515,250 L510,295 L490,310 L460,305 L440,275Z"/>
+                            <path class="land visited" d="M430,310 L490,305 L510,335 L505,375 L480,390 L450,385 L430,355Z"/>
+                            <path class="land visited" d="M510,155 L555,148 L570,172 L565,205 L540,215 L515,210 L505,185Z"/>
+                            <path class="land" d="M560,85 L620,78 L645,100 L638,128 L610,135 L575,128 L560,108Z"/>
+                            <path class="land visited" d="M590,155 L630,145 L650,175 L645,215 L625,240 L600,235 L585,205 L580,178Z"/>
+                            <path class="land visited" d="M635,65 L720,55 L758,82 L750,120 L720,138 L685,140 L660,128 L645,100Z"/>
+                            <path class="land visited" d="M770,80 L785,72 L790,100 L782,118 L770,112Z"/>
+                            <path class="land visited" d="M752,95 L765,90 L768,110 L758,115Z"/>
+                            <path class="land visited" d="M660,155 L700,148 L718,175 L712,210 L690,218 L665,212 L655,185Z"/>
+                            <path class="land visited" d="M670,225 L730,218 L760,235 L755,255 L720,260 L680,255 L668,242Z"/>
+                            <path class="land" d="M720,310 L790,298 L835,320 L840,360 L815,385 L775,390 L740,378 L720,348Z"/>
+                            <path class="land" d="M855,370 L865,365 L870,390 L862,400Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bucket List — zen stones -->
+        <div class="stones-section">
+            <div class="section-label">Where to Next <a href="#">Edit &rarr;</a></div>
+            <div class="stones-grid">
+                <a href="#" class="stone"><div class="st-emoji">&#127774;</div><h4>Morocco</h4><span>Marrakech, Sahara</span></a>
+                <a href="#" class="stone"><div class="st-emoji">&#127752;</div><h4>New Zealand</h4><span>Milford Sound</span></a>
+                <a href="#" class="stone"><div class="st-emoji">&#127843;</div><h4>Oaxaca</h4><span>Food, mezcal</span></a>
+                <a href="#" class="stone"><div class="st-emoji">&#127966;</div><h4>Norway</h4><span>Lofoten, lights</span></a>
+            </div>
+        </div>
+
+        <!-- Trending -->
+        <div class="trend-section">
+            <div class="section-label">See What's Trending</div>
+            <div class="trend-list">
+                <a href="#" class="trend-item"><span class="trend-rank">01</span><div><h4>Lisbon, Portugal</h4><span>342 itineraries</span></div></a>
+                <a href="#" class="trend-item"><span class="trend-rank">02</span><div><h4>Seoul, South Korea</h4><span>287 itineraries</span></div></a>
+                <a href="#" class="trend-item"><span class="trend-rank">03</span><div><h4>Lofoten, Norway</h4><span>156 itineraries</span></div></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-bar">
+        <span><strong>AI Trip Planner</strong> — Tell us where and when. Full itinerary in seconds.</span>
+        <a href="#">Try Free</a>
+    </div>
+
+    <footer>&copy; 2026 Tripscape</footer>
+</body>
+</html>
